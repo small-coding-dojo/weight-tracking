@@ -81,6 +81,13 @@ export function UserNav() {
           <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">
             Signed in as <span className="font-medium text-gray-900">{session.user?.email}</span>
           </div>
+          <Link
+            href="/settings"
+            className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Settings
+          </Link>
           <button
             onClick={handleSignOut}
             className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50"
