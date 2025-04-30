@@ -40,6 +40,30 @@ export default function ChartPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDailyAverages, setShowDailyAverages] = useState(true);
+  const [settings, setSettings] = useState({
+    weightGoal: 0,
+    lossRate: 0.0055,
+    bufferValue: 0.0075,
+  });
+
+  // Load user settings
+  const loadSettings = useCallback(async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.settings) {
+          setSettings({
+            weightGoal: data.settings.weightGoal || 0,
+            lossRate: data.settings.lossRate || 0.0055,
+            bufferValue: data.settings.bufferValue || 0.0075,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
+  }, []);
 
   const loadEntries = useCallback(async () => {
     try {
@@ -81,8 +105,9 @@ export default function ChartPage() {
 
     if (status === 'authenticated') {
       loadEntries();
+      loadSettings();
     }
-  }, [status, router, loadEntries]);
+  }, [status, router, loadEntries, loadSettings]);
 
   // Format date for chart labels - removing time component to group by day
   const formatDateForGrouping = (dateString: string) => {
@@ -171,6 +196,34 @@ export default function ChartPage() {
     });
   };
 
+  // Calculate floor line based on starting value and settings
+  const calculateFloorLine = (dailyAverages: Array<{date: string, value: number}>, settings: {weightGoal: number, lossRate: number, bufferValue: number}) => {
+    if (dailyAverages.length < 7) return [];
+
+    // Calculate starting value (average of first 6 days)
+    const first6DaysData = dailyAverages.slice(0, 6);
+    const sumFirst6Days = first6DaysData.reduce((sum, day) => sum + day.value, 0);
+    const startValue = sumFirst6Days / 6;
+    
+    // Initialize result with empty values for the first 6 days
+    const result: Array<number | null> = Array(6).fill(null);
+    
+    // Calculate floor value for day 7
+    const day7FloorValue = startValue - (startValue * settings.bufferValue * 0.5);
+    result.push(day7FloorValue);
+    
+    // Calculate remaining floor values
+    let previousFloor = day7FloorValue;
+    
+    for (let i = 7; i < dailyAverages.length; i++) {
+      const newFloor = previousFloor - ((previousFloor - settings.weightGoal) * settings.lossRate);
+      result.push(newFloor);
+      previousFloor = newFloor;
+    }
+    
+    return result;
+  };
+
   // Display loading state while checking authentication
   if (status === 'loading' || loading) {
     return (
@@ -209,6 +262,9 @@ export default function ChartPage() {
       : entries.map(entry => ({ date: entry.date, value: entry.value }))
   );
 
+  // Calculate floor line
+  const floorLineData = calculateFloorLine(dailyAverages, settings);
+
   // Set up Chart.js data
   const labels = showDailyAverages 
     ? dailyAverages.map(day => formatDate(day.date))
@@ -241,6 +297,15 @@ export default function ChartPage() {
         fill: false,
         tension: 0,
       },
+      {
+        label: 'Floor Line',
+        data: floorLineData,
+        borderColor: 'lime',
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+      }
     ],
   };
 
