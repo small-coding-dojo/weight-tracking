@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, FormEvent, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function ResetPasswordPage() {
-  const router = useRouter();
+// Create a component that uses useSearchParams
+function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const [token, setToken] = useState('');
   const [password, setPassword] = useState('');
@@ -146,5 +146,23 @@ export default function ResetPasswordPage() {
         </>
       )}
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function LoadingFallback() {
+  return (
+    <div className="flex justify-center items-center p-8">
+      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+}
+
+// Main component wrapped in Suspense
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

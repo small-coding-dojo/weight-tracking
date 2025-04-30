@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 
 export function MainNav() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
   
   if (!isAuthenticated) {

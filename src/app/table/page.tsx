@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -18,19 +18,7 @@ export default function TablePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Redirect to login page if not authenticated
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      loadEntries();
-    }
-  }, [status, router]);
-
-  async function loadEntries() {
+  const loadEntries = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/entries');
@@ -53,7 +41,19 @@ export default function TablePage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
+
+  // Redirect to login page if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+
+    if (status === 'authenticated') {
+      loadEntries();
+    }
+  }, [status, router, loadEntries]);
 
   // Format date for display
   const formatDate = (dateString: string) => {

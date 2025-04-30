@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Line } from 'react-chartjs-2';
@@ -40,19 +40,7 @@ export default function ChartPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Redirect to login page if not authenticated
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      loadEntries();
-    }
-  }, [status, router]);
-
-  async function loadEntries() {
+  const loadEntries = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/entries');
@@ -81,7 +69,19 @@ export default function ChartPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [router]);
+
+  // Redirect to login page if not authenticated
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+
+    if (status === 'authenticated') {
+      loadEntries();
+    }
+  }, [status, router, loadEntries]);
 
   // Format date for chart labels
   const formatDate = (dateString: string) => {
