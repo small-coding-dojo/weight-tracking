@@ -23,6 +23,13 @@
 # Prisma generated files
 /src/generated/
 
+# SQLite database files
+*.db
+*.sqlite
+*.sqlite3
+prisma/*.db
+prisma/prisma/*.db
+
 # misc
 .DS_Store
 *.pem
