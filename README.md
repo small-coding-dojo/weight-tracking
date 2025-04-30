@@ -2,6 +2,24 @@
 
 A mobile-optimized web application for recording and visualizing weight data with secure user authentication.
 
+## Table of Contents
+- [About](#about)
+  - [Who Is This For?](#who-is-this-for)
+- [Features](#features)
+- [Technologies](#technologies)
+- [Deployment Instructions](#deployment-instructions)
+  - [Prerequisites](#prerequisites)
+  - [Production Deployment Steps](#production-deployment-steps)
+  - [Docker Deployment](#docker-deployment)
+- [Environment Variables](#environment-variables)
+  - [Environment Variable Descriptions](#environment-variable-descriptions)
+- [Development Instructions](#development-instructions)
+  - [Local Development Setup](#local-development-setup)
+  - [Database Management](#database-management)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
 ## About
 
 Weight Tracker is designed for individuals who want to monitor their weight changes over time. The application provides an intuitive interface for recording weight measurements, viewing historical data in a tabular format, and visualizing trends through interactive charts.
