@@ -155,7 +155,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "file:./dev.db"
+        "value": "file:./prisma/dev.db"
       }
     }
   },

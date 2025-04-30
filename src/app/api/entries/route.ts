@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '../../../generated/prisma';
-
-// Initialisiere den Prisma-Client direkt
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // Handler für GET-Anfragen - Gibt alle Einträge zurück
 export async function GET() {
