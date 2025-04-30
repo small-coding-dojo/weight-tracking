@@ -138,6 +138,15 @@ exports.Prisma.UserEntryScalarFieldEnum = {
   userId: 'userId'
 };
 
+exports.Prisma.UserSettingsScalarFieldEnum = {
+  id: 'id',
+  weightGoal: 'weightGoal',
+  lossRate: 'lossRate',
+  carbFatRatio: 'carbFatRatio',
+  bufferValue: 'bufferValue',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -151,7 +160,8 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  UserEntry: 'UserEntry'
+  UserEntry: 'UserEntry',
+  UserSettings: 'UserSettings'
 };
 
 /**

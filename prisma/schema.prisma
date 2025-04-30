@@ -22,6 +22,7 @@ model User {
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
   entries           UserEntry[]
+  settings          UserSettings?
 }
 
 // Model for user entries
@@ -34,4 +35,15 @@ model UserEntry {
   updatedAt DateTime @updatedAt
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Model for user settings
+model UserSettings {
+  id           String  @id @default(uuid())
+  weightGoal   Float?
+  lossRate     Float?
+  carbFatRatio Float?
+  bufferValue  Float?
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
