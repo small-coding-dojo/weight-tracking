@@ -1,60 +1,60 @@
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
-# Installiere Abhängigkeiten für Prisma
+# Install dependencies for Prisma
 RUN apk add --no-cache libc6-compat openssl wget
 
-# Setze das Arbeitsverzeichnis
+# Set the working directory
 WORKDIR /app
 
-# Kopiere package.json und package-lock.json
+# Copy package.json and package-lock.json
 FROM base AS deps
 COPY package*.json ./
 RUN npm ci
 
-# Build-Stufe
+# Build stage
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generiere Prisma Client
+# Generate Prisma Client
 RUN npx prisma generate
 
-# Baue die Next.js-Anwendung
+# Build the Next.js application
 RUN npm run build
 
-# Produktions-Stufe
+# Production stage
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Erstelle einen nicht-root Benutzer
+# Create a non-root user
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Kopiere die gebaute Anwendung
+# Copy the built application
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-# Kopiere Prisma-Dateien
+# Copy Prisma files
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/src/generated ./src/generated
 
-# Kopiere Entrypoint-Skript
+# Copy entrypoint script
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
 
-# Erstelle Verzeichnis für SQLite-Datenbank
+# Create directory for SQLite database
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data
 VOLUME /app/data
 
-# Exponiere den Port für Next.js
+# Expose port for Next.js
 EXPOSE 3000
 
 USER nextjs
 
-# Verwende das Entrypoint-Script
+# Use the entrypoint script
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["node", "server.js"]
