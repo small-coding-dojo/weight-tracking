@@ -40,6 +40,13 @@ export default function ChartPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDailyAverages, setShowDailyAverages] = useState(true);
+  const [dateRange, setDateRange] = useState<{
+    startDate: string | null;
+    endDate: string | null;
+  }>({
+    startDate: null,
+    endDate: null,
+  });
   const [settings, setSettings] = useState({
     weightGoal: 0,
     lossRate: 0.0055,
@@ -266,6 +273,62 @@ export default function ChartPage() {
     });
   };
 
+  // Filter entries by date range
+  const getFilteredEntries = (entries: UserEntry[]) => {
+    if (!dateRange.startDate && !dateRange.endDate) {
+      return entries; // No filtering
+    }
+
+    return entries.filter(entry => {
+      const entryDate = new Date(entry.date);
+      
+      // Check start date if set
+      if (dateRange.startDate) {
+        const startDate = new Date(dateRange.startDate);
+        startDate.setHours(0, 0, 0, 0);
+        if (entryDate < startDate) return false;
+      }
+      
+      // Check end date if set
+      if (dateRange.endDate) {
+        const endDate = new Date(dateRange.endDate);
+        endDate.setHours(23, 59, 59, 999);
+        if (entryDate > endDate) return false;
+      }
+      
+      return true;
+    });
+  };
+
+  // Reset date filters
+  const resetDateRange = () => {
+    setDateRange({
+      startDate: null,
+      endDate: null,
+    });
+  };
+
+  // Handle date range change
+  const handleDateRangeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setDateRange(prev => ({
+      ...prev,
+      [name]: value || null,
+    }));
+  };
+
+  // Apply common date ranges
+  const applyPresetRange = (days: number) => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
+    setDateRange({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+    });
+  };
+
   // Display loading state while checking authentication
   if (status === 'loading' || loading) {
     return (
@@ -294,36 +357,79 @@ export default function ChartPage() {
     );
   }
 
-  // Calculate daily averages from entries
-  const dailyAverages = getDailyAverages(entries);
+  // Process all entries for consistent calculations regardless of filter
+  const allDailyAverages = getDailyAverages(entries);
   
-  // Calculate trend line data
-  const trendLineData = calculateTrendLine(
+  // Calculate reference lines based on ALL data
+  const allTrendLineData = calculateTrendLine(
     showDailyAverages 
-      ? dailyAverages.map(day => ({ date: day.date, value: day.value })) 
+      ? allDailyAverages.map(day => ({ date: day.date, value: day.value })) 
       : entries.map(entry => ({ date: entry.date, value: entry.value }))
   );
-
-  // Calculate floor line
-  const floorLineData = calculateFloorLine(dailyAverages, settings);
   
-  // Calculate ceiling line
-  const ceilingLineData = calculateCeilingLine(dailyAverages, {
+  // Calculate floor and ceiling lines based on ALL data
+  const allFloorLineData = calculateFloorLine(allDailyAverages, settings);
+  const allCeilingLineData = calculateCeilingLine(allDailyAverages, {
     ...settings,
-    carbFatRatio: settings.carbFatRatio || 0.6, // Default value if not set
+    carbFatRatio: settings.carbFatRatio || 0.6,
   });
   
-  // Calculate ideal line as average of floor and ceiling
-  const idealLineData = calculateIdealLine(floorLineData, ceilingLineData);
+  // Calculate ideal line as average of floor and ceiling from ALL data
+  const allIdealLineData = calculateIdealLine(allFloorLineData, allCeilingLineData);
+
+  // Apply date filtering only for display
+  const filteredEntries = getFilteredEntries(entries);
+  const filteredDailyAverages = getDailyAverages(filteredEntries);
+  
+  // Find the indices in the complete dataset that correspond to the filtered range
+  const getLineDataForFilteredRange = (completeData: Array<number | null>, filteredDates: Array<{date: string}>) => {
+    if (completeData.length === 0 || filteredDates.length === 0) return [];
+    
+    // If no filtering is active, return the full dataset
+    if (!dateRange.startDate && !dateRange.endDate) {
+      return completeData;
+    }
+    
+    // Create result array with correct length
+    const result: Array<number | null> = [];
+    
+    // For each date in the filtered range, find the corresponding value in the complete dataset
+    filteredDates.forEach((dateItem) => {
+      const date = new Date(dateItem.date).getTime();
+      const allDates = allDailyAverages.map(d => new Date(d.date).getTime());
+      const allIndex = allDates.findIndex(d => d >= date);
+      
+      // If date is found in complete dataset, use that value
+      if (allIndex !== -1 && allIndex < completeData.length) {
+        result.push(completeData[allIndex]);
+      } else {
+        result.push(null);
+      }
+    });
+    
+    return result;
+  };
+  
+  // Get the trend, floor, ceiling and ideal data for the filtered view
+  const filteredTrendLineData = allTrendLineData.length && filteredDailyAverages.length 
+    ? getLineDataForFilteredRange(
+        allTrendLineData.map(point => point.y), 
+        filteredDailyAverages
+      ) 
+    : [];
+    
+  const filteredFloorLineData = getLineDataForFilteredRange(allFloorLineData, filteredDailyAverages);
+  const filteredCeilingLineData = getLineDataForFilteredRange(allCeilingLineData, filteredDailyAverages);
+  const filteredIdealLineData = getLineDataForFilteredRange(allIdealLineData, filteredDailyAverages);
 
   // Set up Chart.js data
   const labels = showDailyAverages 
-    ? dailyAverages.map(day => formatDate(day.date))
-    : entries.map(entry => formatDate(entry.date));
+    ? filteredDailyAverages.map(day => formatDate(day.date))
+    : filteredEntries.map(entry => formatDate(entry.date));
   
   const dataPoints = showDailyAverages 
-    ? dailyAverages.map(day => day.value)
-    : entries.map(entry => entry.value);
+    ? filteredDailyAverages.map(day => day.value)
+    : filteredEntries.map(entry => entry.value);
 
   const chartData = {
     labels,
@@ -340,7 +446,7 @@ export default function ChartPage() {
       },
       {
         label: 'Trend Line',
-        data: trendLineData.map(point => point.y),
+        data: filteredTrendLineData,
         borderColor: 'rgba(255, 99, 132, 0.8)',
         borderWidth: 2,
         borderDash: [5, 5],
@@ -350,7 +456,7 @@ export default function ChartPage() {
       },
       {
         label: 'Floor Line',
-        data: floorLineData,
+        data: filteredFloorLineData,
         borderColor: 'lime',
         borderWidth: 2,
         pointRadius: 0,
@@ -359,8 +465,8 @@ export default function ChartPage() {
       },
       {
         label: 'Ceiling Line',
-        data: ceilingLineData,
-        borderColor: 'red',
+        data: filteredCeilingLineData,
+        borderColor: 'rgba(255, 0, 0, 0.8)',
         borderWidth: 2,
         pointRadius: 0,
         fill: false,
@@ -368,10 +474,10 @@ export default function ChartPage() {
       },
       {
         label: 'Ideal Line',
-        data: idealLineData,
-        borderColor: 'rgba(128, 128, 128, 0.8)', // Grey color
+        data: filteredIdealLineData,
+        borderColor: 'rgba(128, 128, 128, 0.8)',
         borderWidth: 2,
-        borderDash: [3, 3], // Dotted line
+        borderDash: [3, 3],
         pointRadius: 0,
         fill: false,
         tension: 0,
@@ -422,6 +528,97 @@ export default function ChartPage() {
           </div>
         )}
       </div>
+
+      {entries.length > 0 && (
+        <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
+          <h2 className="text-lg font-medium mb-3">Date Range Selection</h2>
+          <div className="flex flex-col md:flex-row md:items-end gap-4">
+            <div className="flex flex-col">
+              <label htmlFor="startDate" className="text-sm font-medium text-gray-600 mb-1">
+                Start Date
+              </label>
+              <input 
+                type="date" 
+                id="startDate"
+                name="startDate"
+                value={dateRange.startDate || ''}
+                onChange={handleDateRangeChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div className="flex flex-col">
+              <label htmlFor="endDate" className="text-sm font-medium text-gray-600 mb-1">
+                End Date
+              </label>
+              <input 
+                type="date" 
+                id="endDate"
+                name="endDate"
+                value={dateRange.endDate || ''}
+                onChange={handleDateRangeChange}
+                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={resetDateRange}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+          
+          <div className="mt-3 flex flex-wrap gap-2">
+            <span className="text-sm text-gray-500 self-center mr-2">Quick select:</span>
+            <button 
+              onClick={() => applyPresetRange(7)} 
+              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Last 7 Days
+            </button>
+            <button 
+              onClick={() => applyPresetRange(30)} 
+              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Last 30 Days
+            </button>
+            <button 
+              onClick={() => applyPresetRange(90)} 
+              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Last 3 Months
+            </button>
+            <button 
+              onClick={() => applyPresetRange(180)} 
+              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Last 6 Months
+            </button>
+            <button 
+              onClick={() => applyPresetRange(365)} 
+              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
+            >
+              Last Year
+            </button>
+          </div>
+          
+          {(dateRange.startDate || dateRange.endDate) && (
+            <div className="mt-3 text-sm">
+              <span className="font-medium text-blue-600">
+                Filtered data: {' '}
+                {filteredEntries.length} entries
+                {showDailyAverages ? ` (${filteredDailyAverages.length} days)` : ''}
+              </span>
+              {filteredEntries.length === 0 && (
+                <span className="ml-2 text-red-600">No data in selected range</span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       
       {entries.length === 0 ? (
         <p className="text-gray-500">No entries found. Create some entries on the homepage.</p>
@@ -431,9 +628,9 @@ export default function ChartPage() {
             <Line data={chartData} options={chartOptions} />
           </div>
           
-          {showDailyAverages && dailyAverages.length > 0 && (
+          {showDailyAverages && filteredDailyAverages.length > 0 && (
             <div className="mt-4 text-sm text-gray-500 text-center">
-              Showing daily averages from {dailyAverages.length} days of data
+              Showing daily averages from {filteredDailyAverages.length} days of data
             </div>
           )}
         </div>
