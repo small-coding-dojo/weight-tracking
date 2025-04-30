@@ -136,6 +136,41 @@ export default function ChartPage() {
     return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
+  // Calculate linear regression for trend line
+  const calculateTrendLine = (data: { date: string; value: number }[]) => {
+    if (data.length < 2) return [];
+
+    // Convert dates to numeric values (days since first entry)
+    const firstDate = new Date(data[0].date).getTime();
+    const xValues = data.map(point => (new Date(point.date).getTime() - firstDate) / (1000 * 60 * 60 * 24));
+    const yValues = data.map(point => point.value);
+    
+    // Calculate means
+    const xMean = xValues.reduce((sum, x) => sum + x, 0) / xValues.length;
+    const yMean = yValues.reduce((sum, y) => sum + y, 0) / yValues.length;
+    
+    // Calculate linear regression coefficients
+    let numerator = 0;
+    let denominator = 0;
+    
+    for (let i = 0; i < xValues.length; i++) {
+      numerator += (xValues[i] - xMean) * (yValues[i] - yMean);
+      denominator += (xValues[i] - xMean) * (xValues[i] - xMean);
+    }
+    
+    const slope = denominator !== 0 ? numerator / denominator : 0;
+    const intercept = yMean - slope * xMean;
+    
+    // Generate trend line points
+    return data.map(point => {
+      const x = (new Date(point.date).getTime() - firstDate) / (1000 * 60 * 60 * 24);
+      return {
+        x,
+        y: slope * x + intercept
+      };
+    });
+  };
+
   // Display loading state while checking authentication
   if (status === 'loading' || loading) {
     return (
@@ -166,23 +201,45 @@ export default function ChartPage() {
 
   // Calculate daily averages from entries
   const dailyAverages = getDailyAverages(entries);
+  
+  // Calculate trend line data
+  const trendLineData = calculateTrendLine(
+    showDailyAverages 
+      ? dailyAverages.map(day => ({ date: day.date, value: day.value })) 
+      : entries.map(entry => ({ date: entry.date, value: entry.value }))
+  );
+
+  // Set up Chart.js data
+  const labels = showDailyAverages 
+    ? dailyAverages.map(day => formatDate(day.date))
+    : entries.map(entry => formatDate(entry.date));
+  
+  const dataPoints = showDailyAverages 
+    ? dailyAverages.map(day => day.value)
+    : entries.map(entry => entry.value);
 
   const chartData = {
-    labels: showDailyAverages 
-      ? dailyAverages.map(day => formatDate(day.date))
-      : entries.map(entry => formatDate(entry.date)),
+    labels,
     datasets: [
       {
         label: showDailyAverages ? 'Daily Average' : 'Individual Measurements',
-        data: showDailyAverages 
-          ? dailyAverages.map(day => day.value)
-          : entries.map(entry => entry.value),
+        data: dataPoints,
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         tension: 0.2,
         fill: true,
         pointRadius: 4,
         pointBackgroundColor: 'rgb(59, 130, 246)',
+      },
+      {
+        label: 'Trend Line',
+        data: trendLineData.map(point => point.y),
+        borderColor: 'rgba(255, 99, 132, 0.8)',
+        borderWidth: 2,
+        borderDash: [5, 5],
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
       },
     ],
   };
