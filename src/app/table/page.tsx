@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 type UserEntry = {
   id: string;
@@ -10,44 +12,63 @@ type UserEntry = {
 };
 
 export default function TablePage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [entries, setEntries] = useState<UserEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Redirect to login page if not authenticated
   useEffect(() => {
-    async function loadEntries() {
-      try {
-        const response = await fetch('/api/entries');
-        
-        if (!response.ok) {
-          throw new Error('Data could not be loaded.');
-        }
-        
-        const data = await response.json();
-        setEntries(data);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        setError('Data could not be loaded. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
     }
-    
-    loadEntries();
-  }, []);
 
+    if (status === 'authenticated') {
+      loadEntries();
+    }
+  }, [status, router]);
+
+  async function loadEntries() {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/entries');
+      
+      if (response.status === 401) {
+        // Unauthorized - redirect to login
+        router.push('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to load data');
+      }
+      
+      const data = await response.json();
+      setEntries(data);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      setError('Failed to load data. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {
-      day: '2-digit',
-      month: '2-digit',
       year: 'numeric',
+      month: 'short',
+      day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit',
+      minute: '2-digit'
     }).format(date);
   };
 
-  if (loading) {
+  // Display loading state while checking authentication
+  if (status === 'loading' || loading) {
     return (
       <div className="flex justify-center items-center p-8">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
@@ -55,48 +76,47 @@ export default function TablePage() {
     );
   }
 
+  // Don't render content if not authenticated
+  if (!session) {
+    return null;
+  }
+
   if (error) {
     return (
       <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
         <p>{error}</p>
+        <button 
+          onClick={() => loadEntries()} 
+          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">All Entries</h1>
+      <h1 className="text-2xl font-bold mb-6">Data Table</h1>
       
       {entries.length === 0 ? (
-        <p className="text-gray-500">No entries available yet. Create your first entry on the homepage.</p>
+        <p className="text-gray-500">No entries found. Create some entries on the homepage.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Value
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Notes
-                </th>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-100 border-b">
+                <th className="p-3">Date</th>
+                <th className="p-3">Value</th>
+                <th className="p-3">Notes</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              {entries.map((entry) => (
-                <tr key={entry.id}>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    {formatDate(entry.date)}
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap font-medium">
-                    {entry.value}
-                  </td>
-                  <td className="px-4 py-3">
-                    {entry.notes || '-'}
-                  </td>
+            <tbody>
+              {entries.map(entry => (
+                <tr key={entry.id} className="border-b hover:bg-gray-50">
+                  <td className="p-3">{formatDate(entry.date)}</td>
+                  <td className="p-3 font-medium">{entry.value}</td>
+                  <td className="p-3">{entry.notes || '-'}</td>
                 </tr>
               ))}
             </tbody>

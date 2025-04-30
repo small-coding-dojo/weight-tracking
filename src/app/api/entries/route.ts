@@ -1,10 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
-// Handler for GET requests - Returns all entries
+// Handler for GET requests - Returns all entries for the current user
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    
+    // If not authenticated, return unauthorized
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const entries = await prisma.userEntry.findMany({
+      where: {
+        userId: session.user.id
+      },
       orderBy: {
         date: 'desc',
       },
@@ -20,9 +35,19 @@ export async function GET() {
   }
 }
 
-// Handler for POST requests - Creates a new entry
+// Handler for POST requests - Creates a new entry for the current user
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    // If not authenticated, return unauthorized
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     // Validate input data
@@ -33,11 +58,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create the new entry
+    // Create the new entry associated with the current user
     const entry = await prisma.userEntry.create({
       data: {
         value: parseFloat(String(body.value)),
         notes: body.notes,
+        userId: session.user.id
       },
     });
 

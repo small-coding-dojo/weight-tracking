@@ -11,7 +11,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modell für Benutzereingaben
+// User model for authentication
+model User {
+  id                String      @id @default(uuid())
+  username          String      @unique
+  email             String      @unique
+  passwordHash      String
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  entries           UserEntry[]
+}
+
+// Model for user entries
 model UserEntry {
   id        String   @id @default(uuid())
   value     Float
@@ -19,4 +32,6 @@ model UserEntry {
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
