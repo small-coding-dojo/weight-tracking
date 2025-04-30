@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Line } from 'react-chartjs-2';
@@ -33,6 +33,9 @@ type UserEntry = {
   notes?: string;
 };
 
+// Import Chart type from chart.js
+import { Chart } from 'chart.js';
+
 export default function ChartPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -53,6 +56,111 @@ export default function ChartPage() {
     bufferValue: 0.0075,
     carbFatRatio: 0.6,
   });
+  // Update the ref type to use the proper Chart.js type
+  const chartRef = useRef<Chart<'line', (number | null)[], string> | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Export chart as image
+  const exportChart = useCallback(() => {
+    if (chartRef.current) {
+      setIsExporting(true);
+      
+      setTimeout(() => {
+        try {
+          // Add null check before accessing canvas property
+          if (!chartRef.current) {
+            setIsExporting(false);
+            return;
+          }
+          
+          // Access the canvas element through the Chart instance
+          const canvas = chartRef.current.canvas;
+          
+          // Create a container for the chart image with some padding and background
+          const exportContainer = document.createElement('div');
+          exportContainer.style.padding = '20px';
+          exportContainer.style.backgroundColor = 'white';
+          exportContainer.style.borderRadius = '8px';
+          exportContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          exportContainer.style.position = 'absolute';
+          exportContainer.style.left = '-9999px';
+          document.body.appendChild(exportContainer);
+          
+          // Add title
+          const title = document.createElement('h2');
+          title.textContent = 'Weight Tracking Chart';
+          title.style.marginBottom = '10px';
+          title.style.fontFamily = 'Arial, sans-serif';
+          title.style.fontSize = '18px';
+          title.style.textAlign = 'center';
+          exportContainer.appendChild(title);
+          
+          // Add date range info if filtering
+          if (dateRange.startDate || dateRange.endDate) {
+            const dateInfo = document.createElement('p');
+            dateInfo.textContent = `Period: ${dateRange.startDate || 'Start'} to ${dateRange.endDate || 'End'}`;
+            dateInfo.style.marginBottom = '15px';
+            dateInfo.style.fontFamily = 'Arial, sans-serif';
+            dateInfo.style.fontSize = '14px';
+            dateInfo.style.textAlign = 'center';
+            dateInfo.style.color = '#666';
+            exportContainer.appendChild(dateInfo);
+          }
+          
+          // Create a copy of the canvas
+          const chartImg = document.createElement('img');
+          chartImg.src = canvas.toDataURL('image/png');
+          chartImg.style.maxWidth = '100%';
+          chartImg.style.height = 'auto';
+          exportContainer.appendChild(chartImg);
+          
+          // Wait for the image to load
+          chartImg.onload = () => {
+            // Create a new canvas to combine all elements
+            const finalCanvas = document.createElement('canvas');
+            const ctx = finalCanvas.getContext('2d');
+            
+            if (ctx) {
+              // Set dimensions to match container with padding
+              finalCanvas.width = exportContainer.offsetWidth;
+              finalCanvas.height = exportContainer.offsetHeight;
+              
+              // Use html2canvas to capture the entire container with styling
+              import('html2canvas').then(({ default: html2canvas }) => {
+                html2canvas(exportContainer, { backgroundColor: 'white' }).then(canvas => {
+                  // Create download link
+                  const link = document.createElement('a');
+                  
+                  // Generate filename with date
+                  const today = new Date();
+                  const formattedDate = today.toISOString().split('T')[0];
+                  const fileName = `weight-chart-${formattedDate}.png`;
+                  
+                  link.download = fileName;
+                  link.href = canvas.toDataURL('image/png');
+                  link.click();
+                  
+                  // Clean up
+                  document.body.removeChild(exportContainer);
+                  setIsExporting(false);
+                });
+              }).catch(err => {
+                console.error("Failed to load html2canvas:", err);
+                setIsExporting(false);
+                document.body.removeChild(exportContainer);
+              });
+            } else {
+              setIsExporting(false);
+              document.body.removeChild(exportContainer);
+            }
+          };
+        } catch (err) {
+          console.error("Error exporting chart:", err);
+          setIsExporting(false);
+        }
+      }, 200); // Small delay to ensure chart is rendered fully
+    }
+  }, [chartRef, dateRange.startDate, dateRange.endDate]);
 
   // Load user settings
   const loadSettings = useCallback(async () => {
@@ -525,6 +633,15 @@ export default function ChartPage() {
                 All Data Points
               </button>
             </div>
+            <button
+              onClick={exportChart}
+              className={`px-3 py-1 text-sm rounded bg-green-600 text-white hover:bg-green-700 ${
+                isExporting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={isExporting}
+            >
+              {isExporting ? 'Exporting...' : 'Export Chart'}
+            </button>
           </div>
         )}
       </div>
@@ -625,7 +742,7 @@ export default function ChartPage() {
       ) : (
         <div>
           <div className="w-full" style={{ height: '400px' }}>
-            <Line data={chartData} options={chartOptions} />
+            <Line ref={chartRef} data={chartData} options={chartOptions} />
           </div>
           
           {showDailyAverages && filteredDailyAverages.length > 0 && (
