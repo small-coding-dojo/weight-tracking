@@ -1,0 +1,9 @@
+-- CreateTable
+CREATE TABLE "UserEntry" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "value" REAL NOT NULL,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "notes" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
