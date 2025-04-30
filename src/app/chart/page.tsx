@@ -255,6 +255,17 @@ export default function ChartPage() {
     return result;
   };
 
+  // Calculate ideal line as average of floor and ceiling
+  const calculateIdealLine = (floorData: Array<number | null>, ceilingData: Array<number | null>) => {
+    if (floorData.length !== ceilingData.length) return [];
+    
+    return floorData.map((floor, index) => {
+      const ceiling = ceilingData[index];
+      if (floor === null || ceiling === null) return null;
+      return (floor + ceiling) / 2;
+    });
+  };
+
   // Display loading state while checking authentication
   if (status === 'loading' || loading) {
     return (
@@ -301,6 +312,9 @@ export default function ChartPage() {
     ...settings,
     carbFatRatio: settings.carbFatRatio || 0.6, // Default value if not set
   });
+  
+  // Calculate ideal line as average of floor and ceiling
+  const idealLineData = calculateIdealLine(floorLineData, ceilingLineData);
 
   // Set up Chart.js data
   const labels = showDailyAverages 
@@ -348,6 +362,16 @@ export default function ChartPage() {
         data: ceilingLineData,
         borderColor: 'red',
         borderWidth: 2,
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+      },
+      {
+        label: 'Ideal Line',
+        data: idealLineData,
+        borderColor: 'rgba(128, 128, 128, 0.8)', // Grey color
+        borderWidth: 2,
+        borderDash: [3, 3], // Dotted line
         pointRadius: 0,
         fill: false,
         tension: 0,
