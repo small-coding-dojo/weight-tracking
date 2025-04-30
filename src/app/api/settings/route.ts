@@ -3,6 +3,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+// Default values
+const DEFAULT_LOSS_RATE = 0.0055;
+const DEFAULT_CARB_FAT_RATIO = 0.6;
+const DEFAULT_BUFFER_VALUE = 0.0075;
+
 // GET: Fetch user settings
 export async function GET() {
   try {
@@ -27,7 +32,19 @@ export async function GET() {
       where: { userId: user.id }
     });
 
-    return NextResponse.json({ settings });
+    // Apply default values if settings don't exist or values are null
+    const responseSettings = settings ? {
+      ...settings,
+      lossRate: settings.lossRate ?? DEFAULT_LOSS_RATE,
+      carbFatRatio: settings.carbFatRatio ?? DEFAULT_CARB_FAT_RATIO,
+      bufferValue: settings.bufferValue ?? DEFAULT_BUFFER_VALUE
+    } : {
+      lossRate: DEFAULT_LOSS_RATE,
+      carbFatRatio: DEFAULT_CARB_FAT_RATIO,
+      bufferValue: DEFAULT_BUFFER_VALUE
+    };
+
+    return NextResponse.json({ settings: responseSettings });
   } catch (error) {
     console.error('Error fetching settings:', error);
     return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
@@ -44,7 +61,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Get data from request body
-    const { weightGoal, lossRate, carbFatRatio, bufferValue } = await req.json();
+    const { 
+      weightGoal, 
+      lossRate = DEFAULT_LOSS_RATE, 
+      carbFatRatio = DEFAULT_CARB_FAT_RATIO, 
+      bufferValue = DEFAULT_BUFFER_VALUE 
+    } = await req.json();
 
     // Find user by email
     const user = await prisma.user.findUnique({

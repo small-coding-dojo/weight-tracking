@@ -6,9 +6,9 @@ import { getSession } from 'next-auth/react';
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
     weightGoal: '',
-    lossRate: '',
-    carbFatRatio: '',
-    bufferValue: ''
+    lossRate: '0.0055',
+    carbFatRatio: '0.6',
+    bufferValue: '0.0075'
   });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -26,9 +26,9 @@ export default function SettingsPage() {
           if (data.settings) {
             setSettings({
               weightGoal: data.settings.weightGoal?.toString() || '',
-              lossRate: data.settings.lossRate?.toString() || '',
-              carbFatRatio: data.settings.carbFatRatio?.toString() || '',
-              bufferValue: data.settings.bufferValue?.toString() || ''
+              lossRate: data.settings.lossRate?.toString() || '0.0055',
+              carbFatRatio: data.settings.carbFatRatio?.toString() || '0.6',
+              bufferValue: data.settings.bufferValue?.toString() || '0.0075'
             });
           }
         }
