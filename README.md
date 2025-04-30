@@ -37,9 +37,11 @@ Weight Tracker is designed for individuals who want to monitor their weight chan
 - **Password Recovery**: Self-service password reset via email
 - **Mobile-optimized UI**: Responsive design works great on smartphones and tablets
 - **Data Input**: Simple form for recording weight values with optional notes
-- **Data Visualization**: Interactive chart showing weight trends over time
+- **Data Visualization**: Interactive chart showing weight trends over time with floor/ceiling guidelines
 - **Data Table**: Comprehensive table view of all recorded entries
 - **Secure Data Storage**: Each user can only access their own data
+- **Data Filtering**: Filter chart data by date ranges
+- **Data Export**: Export chart visualizations as images
 
 ## Technologies
 
@@ -48,6 +50,7 @@ Weight Tracker is designed for individuals who want to monitor their weight chan
 - **Authentication**: NextAuth.js for secure user management
 - **Visualization**: Chart.js with react-chartjs-2
 - **API**: Next.js API Routes
+- **Containerization**: Docker support for easy deployment
 
 ## Deployment Instructions
 
@@ -60,7 +63,7 @@ Weight Tracker is designed for individuals who want to monitor their weight chan
 
 1. Clone the repository:
    ```bash
-   git clone https://your-repository-url/weight-tracking.git
+   git clone https://github.com/BadWinniePooh/weight-tracking.git
    cd weight-tracking
    ```
 
@@ -98,7 +101,12 @@ The application includes Docker support for containerized deployment:
 1. Configure your `.env` file
 2. Build and start the Docker container:
    ```bash
-   docker-compose up -d
+   docker compose up -d
+   ```
+3. The application will be available on port 3000 (or as configured in your compose.yaml)
+4. To stop the container:
+   ```bash
+   docker compose down
    ```
 
 ## Environment Variables
@@ -136,7 +144,7 @@ EMAIL_SERVER_SECURE=false
 
 1. Clone the repository:
    ```bash
-   git clone https://your-repository-url/weight-tracking.git
+   git clone https://github.com/BadWinniePooh/weight-tracking.git
    cd weight-tracking
    ```
 
@@ -191,9 +199,3 @@ EMAIL_SERVER_SECURE=false
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Next.js team for the amazing framework
-- Prisma team for the intuitive ORM
-- Chart.js contributors for the visualization library
