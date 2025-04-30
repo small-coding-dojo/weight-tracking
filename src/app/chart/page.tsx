@@ -44,6 +44,7 @@ export default function ChartPage() {
     weightGoal: 0,
     lossRate: 0.0055,
     bufferValue: 0.0075,
+    carbFatRatio: 0.6,
   });
 
   // Load user settings
@@ -57,6 +58,7 @@ export default function ChartPage() {
             weightGoal: data.settings.weightGoal || 0,
             lossRate: data.settings.lossRate || 0.0055,
             bufferValue: data.settings.bufferValue || 0.0075,
+            carbFatRatio: data.settings.carbFatRatio || 0.6,
           });
         }
       }
@@ -224,6 +226,35 @@ export default function ChartPage() {
     return result;
   };
 
+  // Calculate ceiling line based on starting value and settings
+  const calculateCeilingLine = (dailyAverages: Array<{date: string, value: number}>, settings: {weightGoal: number, lossRate: number, bufferValue: number, carbFatRatio: number}) => {
+    if (dailyAverages.length < 7) return [];
+
+    // Calculate starting value (average of first 6 days)
+    const first6DaysData = dailyAverages.slice(0, 6);
+    const sumFirst6Days = first6DaysData.reduce((sum, day) => sum + day.value, 0);
+    const startValue = sumFirst6Days / 6;
+    
+    // Initialize result with empty values for the first 6 days
+    const result: Array<number | null> = Array(6).fill(null);
+    
+    // Calculate ceiling value for day 7
+    const day7CeilingValue = startValue + (startValue * settings.bufferValue * 0.5);
+    result.push(day7CeilingValue);
+    
+    // Calculate remaining ceiling values
+    let previousCeiling = day7CeilingValue;
+    
+    for (let i = 7; i < dailyAverages.length; i++) {
+      const adjustedGoal = settings.weightGoal + (settings.weightGoal * settings.bufferValue);
+      const newCeiling = previousCeiling - ((previousCeiling - adjustedGoal) * settings.lossRate * settings.carbFatRatio);
+      result.push(newCeiling);
+      previousCeiling = newCeiling;
+    }
+    
+    return result;
+  };
+
   // Display loading state while checking authentication
   if (status === 'loading' || loading) {
     return (
@@ -264,6 +295,12 @@ export default function ChartPage() {
 
   // Calculate floor line
   const floorLineData = calculateFloorLine(dailyAverages, settings);
+  
+  // Calculate ceiling line
+  const ceilingLineData = calculateCeilingLine(dailyAverages, {
+    ...settings,
+    carbFatRatio: settings.carbFatRatio || 0.6, // Default value if not set
+  });
 
   // Set up Chart.js data
   const labels = showDailyAverages 
@@ -301,6 +338,15 @@ export default function ChartPage() {
         label: 'Floor Line',
         data: floorLineData,
         borderColor: 'lime',
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+      },
+      {
+        label: 'Ceiling Line',
+        data: ceilingLineData,
+        borderColor: 'red',
         borderWidth: 2,
         pointRadius: 0,
         fill: false,
