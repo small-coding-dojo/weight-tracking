@@ -44,7 +44,8 @@ COPY --from=builder /app/src/generated ./src/generated
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
+# Ensure script has Unix line endings and is executable
+RUN sed -i 's/\r$//' docker-entrypoint.sh && chmod +x docker-entrypoint.sh
 
 # Create directory for SQLite database
 RUN mkdir -p /app/data && chown -R nextjs:nodejs /app/data

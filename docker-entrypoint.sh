@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-# Führe Prisma-Migrationen beim Start aus
-echo "Führe Datenbankmigrationen durch..."
+# Run Prisma migrations on startup
+echo "Running database migrations..."
 npx prisma migrate deploy
 
-# Führe Server aus
-echo "Starte die Anwendung..."
+# Start the application
+echo "Starting the application..."
 exec "$@"
