@@ -1,16 +1,16 @@
 import { PrismaClient } from '../generated/prisma';
 
-// Deklariere eine globale Variable für den PrismaClient
+// Declare a global variable for the PrismaClient
 declare global {
   // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
 
-// Initialisiere den PrismaClient mit einem Singleton-Pattern
+// Initialize the PrismaClient with a Singleton pattern
 const prismaClientOptions = {};
 export const prisma = global.prisma || new PrismaClient(prismaClientOptions);
 
-// Speichere die Client-Instanz in der globalen Variable im Entwicklungsmodus
+// Store the client instance in the global variable in development mode
 if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
 }

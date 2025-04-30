@@ -14,7 +14,7 @@ export default function Home() {
     e.preventDefault();
     
     if (!value || isNaN(parseFloat(value))) {
-      setError('Bitte gib einen gültigen Zahlenwert ein.');
+      setError('Please enter a valid numeric value.');
       return;
     }
     
@@ -32,18 +32,18 @@ export default function Home() {
       });
       
       if (!response.ok) {
-        throw new Error('Eintrag konnte nicht gespeichert werden');
+        throw new Error('Entry could not be saved');
       }
       
       setValue('');
       setNotes('');
       router.refresh();
       
-      // Optional: Zum Tabellenansicht navigieren
+      // Optional: Navigate to table view
       // router.push('/tabelle');
     } catch (error) {
-      console.error('Fehler beim Speichern:', error);
-      setError('Es ist ein Fehler aufgetreten. Bitte versuche es erneut.');
+      console.error('Error saving:', error);
+      setError('An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -51,7 +51,7 @@ export default function Home() {
 
   return (
     <div className="max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Neuer Eintrag</h1>
+      <h1 className="text-2xl font-bold mb-6">New Entry</h1>
       
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -62,7 +62,7 @@ export default function Home() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-1">
-            Wert
+            Value
           </label>
           <input
             type="number"
@@ -71,21 +71,21 @@ export default function Home() {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="z.B. 75.5"
+            placeholder="e.g. 75.5"
             required
           />
         </div>
         
         <div>
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-            Notizen (optional)
+            Notes (optional)
           </label>
           <textarea
             id="notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Zusätzliche Informationen..."
+            placeholder="Additional information..."
             rows={3}
           />
         </div>
@@ -97,7 +97,7 @@ export default function Home() {
             ${isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} 
             transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
         >
-          {isSubmitting ? 'Wird gespeichert...' : 'Speichern'}
+          {isSubmitting ? 'Saving...' : 'Save'}
         </button>
       </form>
     </div>

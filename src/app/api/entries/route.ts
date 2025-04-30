@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// Handler für GET-Anfragen - Gibt alle Einträge zurück
+// Handler for GET requests - Returns all entries
 export async function GET() {
   try {
     const entries = await prisma.userEntry.findMany({
@@ -12,28 +12,28 @@ export async function GET() {
 
     return NextResponse.json(entries);
   } catch (error) {
-    console.error('Fehler beim Abrufen der Einträge:', error);
+    console.error('Error retrieving entries:', error);
     return NextResponse.json(
-      { error: 'Fehler beim Abrufen der Einträge' },
+      { error: 'Error retrieving entries' },
       { status: 500 }
     );
   }
 }
 
-// Handler für POST-Anfragen - Erstellt einen neuen Eintrag
+// Handler for POST requests - Creates a new entry
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Validiere die Eingabedaten
+    // Validate input data
     if (!body.value || isNaN(parseFloat(String(body.value)))) {
       return NextResponse.json(
-        { error: 'Ungültiger Wert' },
+        { error: 'Invalid value' },
         { status: 400 }
       );
     }
 
-    // Erstelle den neuen Eintrag
+    // Create the new entry
     const entry = await prisma.userEntry.create({
       data: {
         value: parseFloat(String(body.value)),
@@ -43,9 +43,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(entry, { status: 201 });
   } catch (error) {
-    console.error('Fehler beim Erstellen des Eintrags:', error);
+    console.error('Error creating entry:', error);
     return NextResponse.json(
-      { error: 'Fehler beim Erstellen des Eintrags' },
+      { error: 'Error creating entry' },
       { status: 500 }
     );
   }

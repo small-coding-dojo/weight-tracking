@@ -1,39 +1,39 @@
-# Datentracker
+# Data Tracker
 
-Eine mobil-optimierte Webanwendung zur Erfassung und Visualisierung von Daten.
+A mobile-optimized web application for recording and visualizing data.
 
-## Funktionen
+## Features
 
-- Mobil-optimierte Benutzeroberfläche mit responsivem Design
-- Eingabeformular für Werte und Notizen
-- Tabellarische Übersicht aller Eingaben
-- Visuelle Darstellung der Daten als Diagramm
-- SQLite-Datenbank für die lokale Datenspeicherung
-- Moderne Tech-Stack mit Next.js, TypeScript, Tailwind CSS, Prisma und Chart.js
+- Mobile-optimized user interface with responsive design
+- Input form for values and notes
+- Tabular overview of all entries
+- Visual representation of data as a chart
+- SQLite database for local data storage
+- Modern tech stack with Next.js, TypeScript, Tailwind CSS, Prisma, and Chart.js
 
-## Seiten
+## Pages
 
-1. **Eingabeseite** (Homepage): Hier können Benutzer neue Werte mit optionalen Notizen eingeben
-2. **Tabellenseite**: Zeigt alle gespeicherten Eingaben in einer übersichtlichen Tabelle an
-3. **Diagrammseite**: Visualisiert den Verlauf der eingegebenen Werte als Liniendiagramm
+1. **Input Page** (Homepage): Users can enter new values with optional notes
+2. **Table Page**: Displays all saved entries in a clear table
+3. **Chart Page**: Visualizes the progression of entered values as a line chart
 
-## Technologien
+## Technologies
 
-- **Frontend**: Next.js mit TypeScript und Tailwind CSS
-- **Datenbank**: SQLite mit Prisma ORM
-- **Diagramme**: Chart.js mit react-chartjs-2
+- **Frontend**: Next.js with TypeScript and Tailwind CSS
+- **Database**: SQLite with Prisma ORM
+- **Charts**: Chart.js with react-chartjs-2
 - **API**: Next.js API Routes
 
-## Projektstart
+## Project Setup
 
-Um das Projekt lokal zu starten:
+To start the project locally:
 
 ```bash
-# Abhängigkeiten installieren
+# Install dependencies
 npm install
 
-# Entwicklungs-Server starten
+# Start development server
 npm run dev
 ```
 
-Die Anwendung ist dann unter http://localhost:3000 verfügbar.
+The application will be available at http://localhost:3000.

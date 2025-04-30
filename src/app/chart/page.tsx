@@ -13,7 +13,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
-// Chart.js Komponenten registrieren
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -31,7 +31,7 @@ type UserEntry = {
   notes?: string;
 };
 
-export default function DiagrammPage() {
+export default function ChartPage() {
   const [entries, setEntries] = useState<UserEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,18 +42,18 @@ export default function DiagrammPage() {
         const response = await fetch('/api/entries');
         
         if (!response.ok) {
-          throw new Error('Daten konnten nicht geladen werden.');
+          throw new Error('Data could not be loaded.');
         }
         
         const data = await response.json();
-        // Sortiere Einträge nach Datum (älteste zuerst)
+        // Sort entries by date (oldest first)
         const sortedData = [...data].sort(
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
         );
         setEntries(sortedData);
       } catch (error) {
-        console.error('Fehler beim Laden der Daten:', error);
-        setError('Daten konnten nicht geladen werden. Bitte versuche es später erneut.');
+        console.error('Error loading data:', error);
+        setError('Data could not be loaded. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -62,30 +62,30 @@ export default function DiagrammPage() {
     loadEntries();
   }, []);
 
-  // Formatiert das Datum für die Anzeige im Diagramm
+  // Format date for chart display
   const formatDateForChart = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('de-DE', {
+    return new Intl.DateTimeFormat('en-US', {
       day: '2-digit',
       month: '2-digit',
     }).format(date);
   };
 
-  // Bereite Daten für das Diagramm vor
+  // Prepare data for the chart
   const chartData = {
     labels: entries.map(entry => formatDateForChart(entry.date)),
     datasets: [
       {
-        label: 'Werte im Zeitverlauf',
+        label: 'Values over time',
         data: entries.map(entry => entry.value),
-        borderColor: 'rgb(59, 130, 246)', // Blau
+        borderColor: 'rgb(59, 130, 246)', // Blue
         backgroundColor: 'rgba(59, 130, 246, 0.5)',
         tension: 0.3,
       },
     ],
   };
 
-  // Optionen für das Diagramm
+  // Chart options
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -95,7 +95,7 @@ export default function DiagrammPage() {
       },
       title: {
         display: true,
-        text: 'Verlauf der Werte',
+        text: 'Value History',
       },
     },
     scales: {
@@ -123,10 +123,10 @@ export default function DiagrammPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Diagrammansicht</h1>
+      <h1 className="text-2xl font-bold mb-6">Chart View</h1>
       
       {entries.length === 0 ? (
-        <p className="text-gray-500">Noch keine Daten vorhanden. Erstelle Einträge auf der Startseite, um ein Diagramm zu sehen.</p>
+        <p className="text-gray-500">No data available yet. Create entries on the homepage to see a chart.</p>
       ) : (
         <div className="bg-white p-4 rounded-lg shadow">
           <div className="h-[60vh]">

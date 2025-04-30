@@ -20,14 +20,14 @@ export default function TablePage() {
         const response = await fetch('/api/entries');
         
         if (!response.ok) {
-          throw new Error('Daten konnten nicht geladen werden.');
+          throw new Error('Data could not be loaded.');
         }
         
         const data = await response.json();
         setEntries(data);
       } catch (error) {
-        console.error('Fehler beim Laden der Daten:', error);
-        setError('Daten konnten nicht geladen werden. Bitte versuche es später erneut.');
+        console.error('Error loading data:', error);
+        setError('Data could not be loaded. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -38,7 +38,7 @@ export default function TablePage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('de-DE', {
+    return new Intl.DateTimeFormat('en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -65,23 +65,23 @@ export default function TablePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Alle Einträge</h1>
+      <h1 className="text-2xl font-bold mb-6">All Entries</h1>
       
       {entries.length === 0 ? (
-        <p className="text-gray-500">Noch keine Einträge vorhanden. Erstelle deinen ersten Eintrag auf der Startseite.</p>
+        <p className="text-gray-500">No entries available yet. Create your first entry on the homepage.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Datum
+                  Date
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Wert
+                  Value
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Notizen
+                  Notes
                 </th>
               </tr>
             </thead>
