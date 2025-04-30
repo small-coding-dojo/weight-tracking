@@ -31,12 +31,6 @@ export function MainNav() {
       >
         Chart
       </Link>
-      <Link 
-        href="/import" 
-        className="px-3 py-2 rounded hover:bg-blue-700 transition-colors"
-      >
-        Import
-      </Link>
     </nav>
   );
 }
