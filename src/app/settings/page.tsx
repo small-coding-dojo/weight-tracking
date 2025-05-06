@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { getSession } from 'next-auth/react';
-import { useTheme } from '@/components/theme-provider';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 export default function SettingsPage() {
-  const { theme } = useTheme();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const isDarkMode = useDarkMode();
   const [settings, setSettings] = useState({
     weightGoal: '',
     lossRate: '0.0055',
@@ -16,17 +15,6 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
-
-  // Check for dark mode safely (client-side only)
-  useEffect(() => {
-    // Only run in the browser
-    if (typeof window !== 'undefined') {
-      setIsDarkMode(
-        theme === 'dark' || 
-        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      );
-    }
-  }, [theme]);
 
   useEffect(() => {
     const fetchSettings = async () => {

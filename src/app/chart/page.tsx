@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Line } from 'react-chartjs-2';
-import { useTheme } from '@/components/theme-provider';
+import { useDarkMode } from '@/hooks/useDarkMode';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -61,19 +61,7 @@ export default function ChartPage() {
   const chartRef = useRef<Chart<'line', (number | null)[], string> | null>(null);
   const [isExporting, setIsExporting] = useState(false);
 
-  const { theme } = useTheme();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // Check for dark mode safely (client-side only)
-  useEffect(() => {
-    // Only run in the browser
-    if (typeof window !== 'undefined') {
-      setIsDarkMode(
-        theme === 'dark' || 
-        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      );
-    }
-  }, [theme]);
+  const isDarkMode = useDarkMode();
 
   // Export chart as image
   const exportChart = useCallback(() => {

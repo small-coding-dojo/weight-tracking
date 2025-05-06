@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useTheme } from '@/components/theme-provider';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 export default function ImportPage() {
-  const { theme } = useTheme();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const isDarkMode = useDarkMode();
   const { data: session, status } = useSession();
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
@@ -19,17 +18,6 @@ export default function ImportPage() {
     errors?: string[];
     error?: string;
   } | null>(null);
-
-  // Check for dark mode safely (client-side only)
-  useEffect(() => {
-    // Only run in the browser
-    if (typeof window !== 'undefined') {
-      setIsDarkMode(
-        theme === 'dark' || 
-        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      );
-    }
-  }, [theme]);
 
   // Redirect to login page if not authenticated
   if (status === 'unauthenticated') {
