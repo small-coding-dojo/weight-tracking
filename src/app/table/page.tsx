@@ -3,7 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useTheme } from '@/components/theme-provider';
+import { useDarkMode } from '@/hooks/useDarkMode';
+import { Alert } from '@/components/ui/Alert';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 type UserEntry = {
   id: string;
@@ -13,7 +16,7 @@ type UserEntry = {
 };
 
 export default function TablePage() {
-  const { theme } = useTheme();
+  const isDarkMode = useDarkMode();
   const { data: session, status } = useSession();
   const router = useRouter();
   const [entries, setEntries] = useState<UserEntry[]>([]);
@@ -22,18 +25,6 @@ export default function TablePage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // Check for dark mode safely (client-side only)
-  useEffect(() => {
-    // Only run in the browser
-    if (typeof window !== 'undefined') {
-      setIsDarkMode(
-        theme === 'dark' || 
-        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      );
-    }
-  }, [theme]);
 
   const loadEntries = useCallback(async () => {
     try {
@@ -146,17 +137,17 @@ export default function TablePage() {
 
   if (error) {
     return (
-      <div className={`p-4 rounded border ${isDarkMode 
-        ? 'bg-red-900 border-red-800 text-red-300' 
-        : 'bg-red-100 border-red-400 text-red-700'}`}>
+      <Alert variant="error">
         <p>{error}</p>
-        <button 
+        <Button 
           onClick={() => loadEntries()} 
-          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          className="mt-2"
+          variant="primary"
+          size="sm"
         >
           Retry
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -166,18 +157,21 @@ export default function TablePage() {
         <h1 className="text-2xl font-bold">Data Table</h1>
         
         {entries.length > 0 && (
-          <button
+          <Button
             onClick={() => setShowDeleteConfirm(true)}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            variant="danger"
             disabled={isDeleting}
+            isLoading={isDeleting}
           >
-            {isDeleting ? 'Deleting...' : 'Delete All'}
-          </button>
+            Delete All
+          </Button>
         )}
       </div>
       
       {entries.length === 0 ? (
-        <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>No entries found. Create some entries on the homepage.</p>
+        <Alert variant="info" icon={true}>
+          No entries found. Create some entries on the homepage.
+        </Alert>
       ) : (
         <div className="overflow-x-auto">
           <table className={`w-full text-left border-collapse ${isDarkMode ? 'text-gray-200' : ''}`}>
@@ -224,58 +218,56 @@ export default function TablePage() {
       {/* Single Entry Delete Confirmation Modal */}
       {selectedEntryId && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className={`p-6 rounded-lg shadow-lg max-w-md w-full ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : ''}`}>Confirm Delete</h3>
-            <p className={isDarkMode ? 'text-gray-300' : ''}>Are you sure you want to delete this entry? This action cannot be undone.</p>
+          <Card className="max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
+            <p>Are you sure you want to delete this entry? This action cannot be undone.</p>
             
             <div className="mt-6 flex justify-end space-x-3">
-              <button
+              <Button
                 onClick={() => setSelectedEntryId(null)}
-                className={`px-4 py-2 border rounded shadow-sm ${isDarkMode 
-                  ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                variant="outline"
                 disabled={isDeleting}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => deleteEntry(selectedEntryId)}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                variant="danger"
+                isLoading={isDeleting}
                 disabled={isDeleting}
               >
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </button>
+                Delete
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
       {/* Delete All Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className={`p-6 rounded-lg shadow-lg max-w-md w-full ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : ''}`}>Delete All Entries</h3>
-            <p className={isDarkMode ? 'text-gray-300' : ''}>Are you sure you want to delete all entries? This action cannot be undone.</p>
+          <Card className="max-w-md w-full">
+            <h3 className="text-lg font-semibold mb-4">Delete All Entries</h3>
+            <p>Are you sure you want to delete all entries? This action cannot be undone.</p>
             
             <div className="mt-6 flex justify-end space-x-3">
-              <button
+              <Button
                 onClick={() => setShowDeleteConfirm(false)}
-                className={`px-4 py-2 border rounded shadow-sm ${isDarkMode 
-                  ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                variant="outline"
                 disabled={isDeleting}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={deleteAllEntries}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                variant="danger"
+                isLoading={isDeleting}
                 disabled={isDeleting}
               >
-                {isDeleting ? 'Deleting...' : 'Delete All'}
-              </button>
+                Delete All
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>

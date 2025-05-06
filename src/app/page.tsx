@@ -3,6 +3,10 @@
 import { useState, FormEvent, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { Alert } from '@/components/ui/Alert';
+import { FormInput } from '@/components/ui/FormInput';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -77,57 +81,53 @@ export default function Home() {
       <h1 className="text-2xl font-bold mb-6">Data Entry</h1>
       
       {error && (
-        <div className="p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <Alert variant="error" className="mb-4">
           {error}
-        </div>
+        </Alert>
       )}
       
       {success && (
-        <div className="p-4 mb-4 bg-green-100 border border-green-400 text-green-700 rounded">
+        <Alert variant="success" className="mb-4">
           {success}
-        </div>
+        </Alert>
       )}
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="value" className="block text-sm font-medium text-gray-700 mb-1">
-            Value
-          </label>
-          <input
+      <Card>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <FormInput
             type="number"
             id="value"
+            label="Value"
             step="any"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="Enter a value"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-        </div>
-        
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-            Notes (optional)
-          </label>
-          <textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Add any relevant notes"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
-          />
-        </div>
-        
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className={`w-full py-2 px-4 rounded-md text-white font-medium 
-            ${isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} 
-            transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-        >
-          {isSubmitting ? 'Saving...' : 'Save Entry'}
-        </button>
-      </form>
+          
+          <div>
+            <label htmlFor="notes" className="block text-sm font-medium mb-1">
+              Notes (optional)
+            </label>
+            <textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add any relevant notes"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+          </div>
+          
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            isLoading={isSubmitting}
+            fullWidth
+          >
+            Save Entry
+          </Button>
+        </form>
+      </Card>
     </div>
   );
 }

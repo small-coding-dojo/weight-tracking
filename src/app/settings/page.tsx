@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { getSession } from 'next-auth/react';
-import { useDarkMode } from '@/hooks/useDarkMode';
+import { FormInput } from '@/components/ui/FormInput';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Alert } from '@/components/ui/Alert';
 
 export default function SettingsPage() {
-  const isDarkMode = useDarkMode();
   const [settings, setSettings] = useState({
     weightGoal: '',
     lossRate: '0.0055',
@@ -95,124 +97,89 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold mb-6">User Settings</h1>
       
       {message && (
-        <div className={`p-4 mb-6 rounded ${
-          messageType === 'success' 
-            ? isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800'
-            : isDarkMode ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-800'
-        }`}>
+        <Alert 
+          variant={messageType === 'success' ? 'success' : 'error'} 
+          className="mb-6"
+        >
           {message}
-        </div>
+        </Alert>
       )}
       
-      <div className={`rounded-lg shadow p-6 mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+      <Card className="mb-6">
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="weightGoal" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
-              Weight Goal
-            </label>
-            <input
-              type="number"
-              id="weightGoal"
-              name="weightGoal"
-              step="0.1"
-              value={settings.weightGoal}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-white' 
-                  : 'border-gray-300'
-              }`}
-              placeholder="Enter your target weight"
-            />
-            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Your target weight in the same units as your entries</p>
-          </div>
+          <FormInput
+            type="number"
+            id="weightGoal"
+            name="weightGoal"
+            label="Weight Goal"
+            step="0.1"
+            value={settings.weightGoal}
+            onChange={handleChange}
+            placeholder="Enter your target weight"
+            description="Your target weight in the same units as your entries"
+          />
 
-          <div className="mb-4">
-            <label htmlFor="lossRate" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
-              Weight Loss Rate
-            </label>
-            <input
-              type="number"
-              id="lossRate"
-              name="lossRate"
-              step="0.01"
-              value={settings.lossRate}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-white' 
-                  : 'border-gray-300'
-              }`}
-              placeholder="Enter desired weight loss rate"
-            />
-            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Desired weight loss per week</p>
-          </div>
+          <FormInput
+            type="number"
+            id="lossRate"
+            name="lossRate"
+            label="Weight Loss Rate"
+            step="0.01"
+            value={settings.lossRate}
+            onChange={handleChange}
+            placeholder="Enter desired weight loss rate"
+            description="Desired weight loss per week"
+          />
 
-          <div className="mb-4">
-            <label htmlFor="carbFatRatio" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
-              Carb/Fat Ratio
-            </label>
-            <input
-              type="number"
-              id="carbFatRatio"
-              name="carbFatRatio"
-              step="0.01"
-              value={settings.carbFatRatio}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-white' 
-                  : 'border-gray-300'
-              }`}
-              placeholder="Enter your preferred carb/fat ratio"
-            />
-            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Your preferred ratio of carbohydrates to fats</p>
-          </div>
+          <FormInput
+            type="number"
+            id="carbFatRatio"
+            name="carbFatRatio"
+            label="Carb/Fat Ratio"
+            step="0.01"
+            value={settings.carbFatRatio}
+            onChange={handleChange}
+            placeholder="Enter your preferred carb/fat ratio"
+            description="Your preferred ratio of carbohydrates to fats"
+          />
 
-          <div className="mb-6">
-            <label htmlFor="bufferValue" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
-              Buffer Value
-            </label>
-            <input
-              type="number"
-              id="bufferValue"
-              name="bufferValue"
-              step="0.1"
-              value={settings.bufferValue}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isDarkMode 
-                  ? 'bg-gray-700 border-gray-600 text-white' 
-                  : 'border-gray-300'
-              }`}
-              placeholder="Enter buffer value"
-            />
-            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Buffer value for your weight loss calculations</p>
-          </div>
+          <FormInput
+            type="number"
+            id="bufferValue"
+            name="bufferValue"
+            label="Buffer Value"
+            step="0.1"
+            value={settings.bufferValue}
+            onChange={handleChange}
+            placeholder="Enter buffer value"
+            description="Buffer value for your weight loss calculations"
+            className="mb-6"
+          />
 
-          <button
+          <Button
             type="submit"
+            isLoading={loading}
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition duration-200 disabled:opacity-50"
+            fullWidth
           >
-            {loading ? 'Saving...' : 'Save Settings'}
-          </button>
+            Save Settings
+          </Button>
         </form>
-      </div>
+      </Card>
 
       {/* Data Management Section */}
-      <div className={`rounded-lg shadow p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-        <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : ''}`}>Data Management</h2>
+      <Card>
+        <h2 className="text-xl font-semibold mb-4">Data Management</h2>
         
         <div className="space-y-4">
           <div className="border-b pb-4 dark:border-gray-700">
-            <h3 className={`font-medium mb-2 ${isDarkMode ? 'text-gray-200' : ''}`}>Import Data</h3>
-            <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <h3 className="font-medium mb-2">Import Data</h3>
+            <p className="text-sm mb-3">
               Import historic data from Excel spreadsheets with structured measurement data.
             </p>
             <a 
               href="/import" 
-              className={`inline-flex items-center ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
@@ -223,7 +190,7 @@ export default function SettingsPage() {
 
           {/* Room for future data management options */}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

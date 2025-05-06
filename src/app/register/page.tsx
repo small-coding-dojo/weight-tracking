@@ -3,6 +3,10 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Alert } from '@/components/ui/Alert';
+import { Button } from '@/components/ui/Button';
+import { FormInput } from '@/components/ui/FormInput';
+import { Card } from '@/components/ui/Card';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -53,85 +57,66 @@ export default function RegisterPage() {
       <h1 className="text-2xl font-bold mb-6">Create an Account</h1>
       
       {error && (
-        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+        <Alert variant="error" className="mb-4">
           {error}
-        </div>
+        </Alert>
       )}
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-            Username
-          </label>
-          <input
+      <Card>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <FormInput
             type="text"
             id="username"
+            label="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-        </div>
-        
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email Address
-          </label>
-          <input
+          
+          <FormInput
             type="email"
             id="email"
+            label="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-        </div>
-        
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-            Password
-          </label>
-          <input
+          
+          <FormInput
             type="password"
             id="password"
+            label="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             minLength={6}
             required
           />
-        </div>
-        
-        <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-            Confirm Password
-          </label>
-          <input
+          
+          <FormInput
             type="password"
             id="confirmPassword"
+            label="Confirm Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             minLength={6}
             required
           />
-        </div>
-        
-        <button
-          type="submit"
-          disabled={isLoading}
-          className={`w-full py-2 px-4 rounded-md text-white font-medium 
-            ${isLoading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} 
-            transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-        >
-          {isLoading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
+          
+          <Button
+            type="submit"
+            disabled={isLoading}
+            isLoading={isLoading}
+            fullWidth
+          >
+            Register
+          </Button>
+        </form>
+      </Card>
       
       <div className="mt-4 text-center">
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
             Log In
           </Link>
         </p>

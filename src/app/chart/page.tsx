@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Line } from 'react-chartjs-2';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { Alert } from '@/components/ui/Alert';
+import { Button } from '@/components/ui/Button';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -456,17 +458,17 @@ export default function ChartPage() {
 
   if (error) {
     return (
-      <div className={`p-4 rounded border ${isDarkMode 
-        ? 'bg-red-900 border-red-800 text-red-300' 
-        : 'bg-red-100 border-red-400 text-red-700'}`}>
+      <Alert variant="error">
         <p>{error}</p>
-        <button 
+        <Button 
           onClick={() => loadEntries()} 
-          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          className="mt-2"
+          variant="primary"
+          size="sm"
         >
           Retry
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -768,7 +770,9 @@ export default function ChartPage() {
       )}
       
       {entries.length === 0 ? (
-        <p className="text-gray-500">No entries found. Create some entries on the homepage.</p>
+        <Alert variant="info" icon={true}>
+          No entries found. Create some entries on the homepage.
+        </Alert>
       ) : (
         <div>
           <div className="w-full" style={{ height: '400px' }}>

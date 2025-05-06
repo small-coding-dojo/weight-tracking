@@ -2,6 +2,10 @@
 
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
+import { Alert } from '@/components/ui/Alert';
+import { Button } from '@/components/ui/Button';
+import { FormInput } from '@/components/ui/FormInput';
+import { Card } from '@/components/ui/Card';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -40,50 +44,46 @@ export default function ForgotPasswordPage() {
       <h1 className="text-2xl font-bold mb-6">Reset Password</h1>
       
       {isSubmitted ? (
-        <div className="p-4 bg-green-100 border border-green-400 text-green-700 rounded mb-4">
+        <Alert variant="success" icon={true}>
           <p>If an account exists with that email, you will receive password reset instructions.</p>
           <p className="mt-4">
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
               Return to login
             </Link>
           </p>
-        </div>
+        </Alert>
       ) : (
         <>
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <Alert variant="error" className="mb-4">
               {error}
-            </div>
+            </Alert>
           )}
           
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
+          <Card>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <FormInput
                 type="email"
                 id="email"
+                label="Email Address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-            </div>
-            
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full py-2 px-4 rounded-md text-white font-medium 
-                ${isLoading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} 
-                transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
-            >
-              {isLoading ? 'Processing...' : 'Send Reset Link'}
-            </button>
-          </form>
+              
+              <Button
+                type="submit"
+                disabled={isLoading}
+                isLoading={isLoading}
+                fullWidth
+              >
+                Send Reset Link
+              </Button>
+            </form>
+          </Card>
           
           <div className="mt-4 text-center">
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
               Back to Login
             </Link>
           </div>

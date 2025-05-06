@@ -4,10 +4,11 @@ import { useState, FormEvent } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useDarkMode } from '@/hooks/useDarkMode';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Alert } from '@/components/ui/Alert';
 
 export default function ImportPage() {
-  const isDarkMode = useDarkMode();
   const { data: session, status } = useSession();
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
@@ -74,10 +75,10 @@ export default function ImportPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">Import Historic Data</h1>
 
-      <div className={`${isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-white'} p-6 rounded-md shadow-md`}>
+      <Card>
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Instructions</h2>
-          <ul className={`list-disc pl-6 space-y-1 ${isDarkMode ? 'text-gray-300' : ''}`}>
+          <ul className="list-disc pl-6 space-y-1">
             <li>Prepare an Excel file with columns for date and measurements</li>
             <li>Required column names: &quot;date, measurement 1, measurement 2, measurement 3&quot;</li>
             <li>Measurement 1 will be assigned 8:00 AM on the specified date</li>
@@ -89,7 +90,7 @@ export default function ImportPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="file" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            <label htmlFor="file" className="block text-sm font-medium mb-1">
               Select Excel File
             </label>
             <input
@@ -97,39 +98,31 @@ export default function ImportPage() {
               id="file"
               accept=".xlsx, .xls"
               onChange={handleFileChange}
-              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                isDarkMode ? 'bg-gray-700 border-gray-600 text-white file:bg-gray-600 file:text-gray-200 file:border-gray-500' : 'border-gray-300'
-              }`}
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-gray-600 dark:file:text-gray-200"
               required
               disabled={isLoading}
             />
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={isLoading || !file}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium 
-              ${isLoading || !file ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} 
-              transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+            isLoading={isLoading}
+            fullWidth
           >
-            {isLoading ? 'Importing...' : 'Import Data'}
-          </button>
+            Import Data
+          </Button>
         </form>
 
         {result && (
-          <div className={`mt-6 p-4 rounded-md ${
-            result.success 
-              ? isDarkMode ? 'bg-green-900 border border-green-800 text-green-200' : 'bg-green-50 border border-green-200' 
-              : isDarkMode ? 'bg-red-900 border border-red-800 text-red-200' : 'bg-red-50 border border-red-200'
-          }`}>
+          <div className="mt-6">
             {result.success ? (
-              <>
-                <h3 className={`font-medium ${isDarkMode ? 'text-green-200' : 'text-green-800'}`}>Import Successful!</h3>
+              <Alert variant="success" title="Import Successful!">
                 <p className="mt-1">Successfully imported {result.imported} measurements.</p>
                 {result.errors && result.errors.length > 0 && (
                   <div className="mt-2">
-                    <h4 className={`font-medium ${isDarkMode ? 'text-amber-300' : 'text-amber-700'}`}>Warnings:</h4>
-                    <ul className={`list-disc pl-6 mt-1 text-sm ${isDarkMode ? 'text-amber-200' : 'text-amber-800'}`}>
+                    <h4 className="font-medium text-amber-700 dark:text-amber-300">Warnings:</h4>
+                    <ul className="list-disc pl-6 mt-1 text-sm text-amber-800 dark:text-amber-200">
                       {result.errors.map((error, i) => (
                         <li key={i}>{error}</li>
                       ))}
@@ -139,28 +132,27 @@ export default function ImportPage() {
                 <div className="mt-4">
                   <Link 
                     href="/table" 
-                    className={`${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} hover:underline`}
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
                   >
                     View data in table
                   </Link>
                   {' | '}
                   <Link 
                     href="/chart" 
-                    className={`${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} hover:underline`}
+                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
                   >
                     View data in chart
                   </Link>
                 </div>
-              </>
+              </Alert>
             ) : (
-              <>
-                <h3 className={`font-medium ${isDarkMode ? 'text-red-300' : 'text-red-800'}`}>Import Failed</h3>
-                <p className={`mt-1 ${isDarkMode ? 'text-red-200' : 'text-red-700'}`}>{result.error}</p>
-              </>
+              <Alert variant="error" title="Import Failed">
+                <p className="mt-1">{result.error}</p>
+              </Alert>
             )}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
