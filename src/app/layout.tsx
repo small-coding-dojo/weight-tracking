@@ -18,12 +18,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gray-50`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} bg-gray-50 dark:bg-gray-900 dark:text-gray-100`}>
         <Providers>
           <div className="flex flex-col min-h-screen">
             {/* Header with navigation for mobile */}
-            <header className="bg-blue-600 text-white shadow-md">
+            <header className="bg-blue-600 text-white shadow-md dark:bg-blue-800">
               <div className="container mx-auto px-4 py-4">
                 <div className="flex justify-between items-center mb-3">
                   <h1 className="text-xl font-bold">Data Tracker</h1>
@@ -39,8 +39,8 @@ export default function RootLayout({
             </main>
             
             {/* Footer */}
-            <footer className="bg-gray-100 border-t">
-              <div className="container mx-auto p-4 text-center text-sm text-gray-600">
+            <footer className="bg-gray-100 border-t dark:bg-gray-800 dark:border-gray-700">
+              <div className="container mx-auto p-4 text-center text-sm text-gray-600 dark:text-gray-400">
                 &copy; 2025 Data Tracker - Mobile optimized application
               </div>
             </footer>

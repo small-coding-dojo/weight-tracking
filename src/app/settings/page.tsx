@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { getSession } from 'next-auth/react';
+import { useTheme } from '@/components/theme-provider';
 
 export default function SettingsPage() {
+  const { theme } = useTheme();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [settings, setSettings] = useState({
     weightGoal: '',
     lossRate: '0.0055',
@@ -13,6 +16,17 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
+
+  // Check for dark mode safely (client-side only)
+  useEffect(() => {
+    // Only run in the browser
+    if (typeof window !== 'undefined') {
+      setIsDarkMode(
+        theme === 'dark' || 
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      );
+    }
+  }, [theme]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -93,15 +107,19 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold mb-6">User Settings</h1>
       
       {message && (
-        <div className={`p-4 mb-6 rounded ${messageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+        <div className={`p-4 mb-6 rounded ${
+          messageType === 'success' 
+            ? isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800'
+            : isDarkMode ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-800'
+        }`}>
           {message}
         </div>
       )}
       
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className={`rounded-lg shadow p-6 mb-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="weightGoal" className="block text-sm font-medium mb-1">
+            <label htmlFor="weightGoal" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
               Weight Goal
             </label>
             <input
@@ -111,14 +129,18 @@ export default function SettingsPage() {
               step="0.1"
               value={settings.weightGoal}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'border-gray-300'
+              }`}
               placeholder="Enter your target weight"
             />
-            <p className="text-xs text-gray-500 mt-1">Your target weight in the same units as your entries</p>
+            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Your target weight in the same units as your entries</p>
           </div>
 
           <div className="mb-4">
-            <label htmlFor="lossRate" className="block text-sm font-medium mb-1">
+            <label htmlFor="lossRate" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
               Weight Loss Rate
             </label>
             <input
@@ -128,14 +150,18 @@ export default function SettingsPage() {
               step="0.01"
               value={settings.lossRate}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'border-gray-300'
+              }`}
               placeholder="Enter desired weight loss rate"
             />
-            <p className="text-xs text-gray-500 mt-1">Desired weight loss per week</p>
+            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Desired weight loss per week</p>
           </div>
 
           <div className="mb-4">
-            <label htmlFor="carbFatRatio" className="block text-sm font-medium mb-1">
+            <label htmlFor="carbFatRatio" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
               Carb/Fat Ratio
             </label>
             <input
@@ -145,14 +171,18 @@ export default function SettingsPage() {
               step="0.01"
               value={settings.carbFatRatio}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'border-gray-300'
+              }`}
               placeholder="Enter your preferred carb/fat ratio"
             />
-            <p className="text-xs text-gray-500 mt-1">Your preferred ratio of carbohydrates to fats</p>
+            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Your preferred ratio of carbohydrates to fats</p>
           </div>
 
           <div className="mb-6">
-            <label htmlFor="bufferValue" className="block text-sm font-medium mb-1">
+            <label htmlFor="bufferValue" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`}>
               Buffer Value
             </label>
             <input
@@ -162,10 +192,14 @@ export default function SettingsPage() {
               step="0.1"
               value={settings.bufferValue}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isDarkMode 
+                  ? 'bg-gray-700 border-gray-600 text-white' 
+                  : 'border-gray-300'
+              }`}
               placeholder="Enter buffer value"
             />
-            <p className="text-xs text-gray-500 mt-1">Buffer value for your weight loss calculations</p>
+            <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Buffer value for your weight loss calculations</p>
           </div>
 
           <button
@@ -179,18 +213,18 @@ export default function SettingsPage() {
       </div>
 
       {/* Data Management Section */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4">Data Management</h2>
+      <div className={`rounded-lg shadow p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+        <h2 className={`text-xl font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : ''}`}>Data Management</h2>
         
         <div className="space-y-4">
-          <div className="border-b pb-4">
-            <h3 className="font-medium mb-2">Import Data</h3>
-            <p className="text-gray-600 text-sm mb-3">
+          <div className="border-b pb-4 dark:border-gray-700">
+            <h3 className={`font-medium mb-2 ${isDarkMode ? 'text-gray-200' : ''}`}>Import Data</h3>
+            <p className={`text-sm mb-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               Import historic data from Excel spreadsheets with structured measurement data.
             </p>
             <a 
               href="/import" 
-              className="inline-flex items-center text-blue-600 hover:text-blue-800"
+              className={`inline-flex items-center ${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Line } from 'react-chartjs-2';
+import { useTheme } from '@/components/theme-provider';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -59,6 +60,20 @@ export default function ChartPage() {
   // Update the ref type to use the proper Chart.js type
   const chartRef = useRef<Chart<'line', (number | null)[], string> | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+
+  const { theme } = useTheme();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Check for dark mode safely (client-side only)
+  useEffect(() => {
+    // Only run in the browser
+    if (typeof window !== 'undefined') {
+      setIsDarkMode(
+        theme === 'dark' || 
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      );
+    }
+  }, [theme]);
 
   // Export chart as image
   const exportChart = useCallback(() => {
@@ -453,7 +468,9 @@ export default function ChartPage() {
 
   if (error) {
     return (
-      <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+      <div className={`p-4 rounded border ${isDarkMode 
+        ? 'bg-red-900 border-red-800 text-red-300' 
+        : 'bg-red-100 border-red-400 text-red-700'}`}>
         <p>{error}</p>
         <button 
           onClick={() => loadEntries()} 
@@ -599,7 +616,34 @@ export default function ChartPage() {
     scales: {
       y: {
         beginAtZero: false,
+        grid: {
+          color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
+        }
       },
+      x: {
+        grid: {
+          color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
+        }
+      },
+      tooltip: {
+        titleColor: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
+        bodyColor: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
+        backgroundColor: isDarkMode ? 'rgba(50, 50, 50, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+        borderColor: isDarkMode ? 'rgba(70, 70, 70, 0.9)' : 'rgba(220, 220, 220, 0.9)',
+      }
     },
   };
 
@@ -647,11 +691,11 @@ export default function ChartPage() {
       </div>
 
       {entries.length > 0 && (
-        <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
-          <h2 className="text-lg font-medium mb-3">Date Range Selection</h2>
+        <div className={`mb-6 p-4 rounded-lg shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <h2 className={`text-lg font-medium mb-3 ${isDarkMode ? 'text-white' : ''}`}>Date Range Selection</h2>
           <div className="flex flex-col md:flex-row md:items-end gap-4">
             <div className="flex flex-col">
-              <label htmlFor="startDate" className="text-sm font-medium text-gray-600 mb-1">
+              <label htmlFor="startDate" className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 Start Date
               </label>
               <input 
@@ -660,12 +704,16 @@ export default function ChartPage() {
                 name="startDate"
                 value={dateRange.startDate || ''}
                 onChange={handleDateRangeChange}
-                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDarkMode 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'border-gray-300'
+                }`}
               />
             </div>
             
             <div className="flex flex-col">
-              <label htmlFor="endDate" className="text-sm font-medium text-gray-600 mb-1">
+              <label htmlFor="endDate" className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 End Date
               </label>
               <input 
@@ -674,14 +722,22 @@ export default function ChartPage() {
                 name="endDate"
                 value={dateRange.endDate || ''}
                 onChange={handleDateRangeChange}
-                className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  isDarkMode 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'border-gray-300'
+                }`}
               />
             </div>
             
             <div className="flex gap-2">
               <button
                 onClick={resetDateRange}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                className={`px-4 py-2 rounded transition-colors ${
+                  isDarkMode 
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
                 Reset
               </button>
@@ -689,48 +745,34 @@ export default function ChartPage() {
           </div>
           
           <div className="mt-3 flex flex-wrap gap-2">
-            <span className="text-sm text-gray-500 self-center mr-2">Quick select:</span>
-            <button 
-              onClick={() => applyPresetRange(7)} 
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-            >
-              Last 7 Days
-            </button>
-            <button 
-              onClick={() => applyPresetRange(30)} 
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-            >
-              Last 30 Days
-            </button>
-            <button 
-              onClick={() => applyPresetRange(90)} 
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-            >
-              Last 3 Months
-            </button>
-            <button 
-              onClick={() => applyPresetRange(180)} 
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-            >
-              Last 6 Months
-            </button>
-            <button 
-              onClick={() => applyPresetRange(365)} 
-              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-            >
-              Last Year
-            </button>
+            <span className={`text-sm self-center mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Quick select:</span>
+            {[7, 30, 90, 180, 365].map(days => (
+              <button 
+                key={days}
+                onClick={() => applyPresetRange(days)} 
+                className={`px-3 py-1 text-xs rounded ${
+                  isDarkMode 
+                    ? 'bg-gray-700 hover:bg-gray-600' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+              >
+                {days === 7 ? 'Last 7 Days' : 
+                 days === 30 ? 'Last 30 Days' : 
+                 days === 90 ? 'Last 3 Months' : 
+                 days === 180 ? 'Last 6 Months' : 'Last Year'}
+              </button>
+            ))}
           </div>
           
           {(dateRange.startDate || dateRange.endDate) && (
             <div className="mt-3 text-sm">
-              <span className="font-medium text-blue-600">
+              <span className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                 Filtered data: {' '}
                 {filteredEntries.length} entries
                 {showDailyAverages ? ` (${filteredDailyAverages.length} days)` : ''}
               </span>
               {filteredEntries.length === 0 && (
-                <span className="ml-2 text-red-600">No data in selected range</span>
+                <span className={`ml-2 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>No data in selected range</span>
               )}
             </div>
           )}

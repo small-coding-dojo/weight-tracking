@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTheme } from '@/components/theme-provider';
 
 export default function ImportPage() {
+  const { theme } = useTheme();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
@@ -16,6 +19,17 @@ export default function ImportPage() {
     errors?: string[];
     error?: string;
   } | null>(null);
+
+  // Check for dark mode safely (client-side only)
+  useEffect(() => {
+    // Only run in the browser
+    if (typeof window !== 'undefined') {
+      setIsDarkMode(
+        theme === 'dark' || 
+        (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      );
+    }
+  }, [theme]);
 
   // Redirect to login page if not authenticated
   if (status === 'unauthenticated') {
@@ -72,10 +86,10 @@ export default function ImportPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">Import Historic Data</h1>
 
-      <div className="bg-white p-6 rounded-md shadow-md">
+      <div className={`${isDarkMode ? 'bg-gray-800 text-gray-200' : 'bg-white'} p-6 rounded-md shadow-md`}>
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Instructions</h2>
-          <ul className="list-disc pl-6 space-y-1">
+          <ul className={`list-disc pl-6 space-y-1 ${isDarkMode ? 'text-gray-300' : ''}`}>
             <li>Prepare an Excel file with columns for date and measurements</li>
             <li>Required column names: &quot;date, measurement 1, measurement 2, measurement 3&quot;</li>
             <li>Measurement 1 will be assigned 8:00 AM on the specified date</li>
@@ -87,7 +101,7 @@ export default function ImportPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="file" className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               Select Excel File
             </label>
             <input
@@ -95,7 +109,9 @@ export default function ImportPage() {
               id="file"
               accept=".xlsx, .xls"
               onChange={handleFileChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isDarkMode ? 'bg-gray-700 border-gray-600 text-white file:bg-gray-600 file:text-gray-200 file:border-gray-500' : 'border-gray-300'
+              }`}
               required
               disabled={isLoading}
             />
@@ -114,16 +130,18 @@ export default function ImportPage() {
 
         {result && (
           <div className={`mt-6 p-4 rounded-md ${
-            result.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+            result.success 
+              ? isDarkMode ? 'bg-green-900 border border-green-800 text-green-200' : 'bg-green-50 border border-green-200' 
+              : isDarkMode ? 'bg-red-900 border border-red-800 text-red-200' : 'bg-red-50 border border-red-200'
           }`}>
             {result.success ? (
               <>
-                <h3 className="font-medium text-green-800">Import Successful!</h3>
+                <h3 className={`font-medium ${isDarkMode ? 'text-green-200' : 'text-green-800'}`}>Import Successful!</h3>
                 <p className="mt-1">Successfully imported {result.imported} measurements.</p>
                 {result.errors && result.errors.length > 0 && (
                   <div className="mt-2">
-                    <h4 className="font-medium text-amber-700">Warnings:</h4>
-                    <ul className="list-disc pl-6 mt-1 text-sm text-amber-800">
+                    <h4 className={`font-medium ${isDarkMode ? 'text-amber-300' : 'text-amber-700'}`}>Warnings:</h4>
+                    <ul className={`list-disc pl-6 mt-1 text-sm ${isDarkMode ? 'text-amber-200' : 'text-amber-800'}`}>
                       {result.errors.map((error, i) => (
                         <li key={i}>{error}</li>
                       ))}
@@ -133,14 +151,14 @@ export default function ImportPage() {
                 <div className="mt-4">
                   <Link 
                     href="/table" 
-                    className="text-blue-600 hover:underline"
+                    className={`${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} hover:underline`}
                   >
                     View data in table
                   </Link>
                   {' | '}
                   <Link 
                     href="/chart" 
-                    className="text-blue-600 hover:underline"
+                    className={`${isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'} hover:underline`}
                   >
                     View data in chart
                   </Link>
@@ -148,8 +166,8 @@ export default function ImportPage() {
               </>
             ) : (
               <>
-                <h3 className="font-medium text-red-800">Import Failed</h3>
-                <p className="mt-1 text-red-700">{result.error}</p>
+                <h3 className={`font-medium ${isDarkMode ? 'text-red-300' : 'text-red-800'}`}>Import Failed</h3>
+                <p className={`mt-1 ${isDarkMode ? 'text-red-200' : 'text-red-700'}`}>{result.error}</p>
               </>
             )}
           </div>

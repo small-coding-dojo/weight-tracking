@@ -4,6 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
+import { ThemeToggle } from './theme-toggle';
 
 export function UserNav() {
   const { data: session, status } = useSession();
@@ -38,12 +39,13 @@ export function UserNav() {
   if (!session) {
     return (
       <div className="flex items-center space-x-2">
+        <ThemeToggle />
         <Link href="/login" className="text-sm font-medium hover:underline">
           Log in
         </Link>
         <Link 
           href="/register" 
-          className="text-sm bg-white text-blue-600 font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors"
+          className="text-sm bg-white text-blue-600 font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
         >
           Register
         </Link>
@@ -52,9 +54,10 @@ export function UserNav() {
   }
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative flex items-center" ref={menuRef}>
+      <ThemeToggle />
       <button
-        className="flex items-center space-x-1 bg-blue-700 hover:bg-blue-800 rounded px-3 py-1"
+        className="flex items-center space-x-1 bg-blue-700 hover:bg-blue-800 rounded px-3 py-1 ml-2"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
         <span className="text-sm font-medium truncate max-w-[120px]">
@@ -77,20 +80,20 @@ export function UserNav() {
       </button>
       
       {isMenuOpen && (
-        <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg py-1 w-48 z-10">
-          <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">
-            Signed in as <span className="font-medium text-gray-900">{session.user?.email}</span>
+        <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg py-1 w-48 z-10 top-full dark:bg-gray-800 dark:border dark:border-gray-700">
+          <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100 dark:text-gray-400 dark:border-gray-700">
+            Signed in as <span className="font-medium text-gray-900 dark:text-white">{session.user?.email}</span>
           </div>
           <Link
             href="/settings"
-            className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
             onClick={() => setIsMenuOpen(false)}
           >
             Settings
           </Link>
           <button
             onClick={handleSignOut}
-            className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+            className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700"
           >
             Sign out
           </button>
