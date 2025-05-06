@@ -1,13 +1,16 @@
 'use client';
 
-import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { Slot } from '@radix-ui/react-slot';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'outline' | 'ghost';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'icon';
   isLoading?: boolean;
   fullWidth?: boolean;
+  asChild?: boolean;
+  children?: ReactNode;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -16,19 +19,23 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     size = 'md', 
     isLoading = false, 
     fullWidth = false, 
+    asChild = false,
     children, 
     className = '',
     disabled,
     ...props 
   }, ref) => {
     const isDarkMode = useDarkMode();
+    const Comp = asChild ? Slot : "button";
     
     const baseStyles = 'inline-flex items-center justify-center font-medium transition-colors rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500';
     
     const sizeStyles = {
+      xs: 'px-2 py-0.5 text-xs',
       sm: 'px-3 py-1 text-sm',
       md: 'px-4 py-2',
       lg: 'px-6 py-3 text-lg',
+      icon: 'p-2 aspect-square',
     };
     
     const variantStyles = {
@@ -41,12 +48,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       outline: isDarkMode
         ? 'border border-gray-600 text-gray-300 hover:bg-gray-700'
         : 'border border-gray-300 text-gray-700 hover:bg-gray-50',
+      ghost: isDarkMode
+        ? 'text-gray-300 hover:bg-gray-800 hover:text-gray-100'
+        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-800',
     };
     
     const widthStyle = fullWidth ? 'w-full' : '';
     
     return (
-      <button
+      <Comp
         ref={ref}
         disabled={disabled || isLoading}
         className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${widthStyle} ${className}`}
@@ -63,7 +73,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ) : (
           children
         )}
-      </button>
+      </Comp>
     );
   }
 );

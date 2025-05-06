@@ -1,14 +1,17 @@
 'use client';
 
 import { useTheme } from '@/components/theme-provider';
+import { Button } from '@/components/ui/Button';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
     <div className="relative inline-block">
-      <button
-        className="flex items-center p-2 rounded-md hover:bg-blue-700 dark:hover:bg-gray-700 text-white"
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-white"
         onClick={() => {
           setTheme(theme === 'dark' ? 'light' : theme === 'light' ? 'system' : 'dark');
         }}
@@ -72,7 +75,7 @@ export function ThemeToggle() {
             <line x1="12" x2="12" y1="17" y2="21"></line>
           </svg>
         )}
-      </button>
+      </Button>
     </div>
   );
 }

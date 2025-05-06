@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { ThemeToggle } from './theme-toggle';
+import { Button } from '@/components/ui/Button';
 
 export function UserNav() {
   const { data: session, status } = useSession();
@@ -40,15 +41,24 @@ export function UserNav() {
     return (
       <div className="flex items-center space-x-2">
         <ThemeToggle />
-        <Link href="/login" className="text-sm font-medium hover:underline">
-          Log in
-        </Link>
-        <Link 
-          href="/register" 
-          className="text-sm bg-white text-blue-600 font-medium px-3 py-1 rounded hover:bg-blue-50 transition-colors dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
         >
-          Register
-        </Link>
+          <Link href="/login">
+            Log in
+          </Link>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          asChild
+        >
+          <Link href="/register">
+            Register
+          </Link>
+        </Button>
       </div>
     );
   }
@@ -56,8 +66,10 @@ export function UserNav() {
   return (
     <div className="relative flex items-center" ref={menuRef}>
       <ThemeToggle />
-      <button
-        className="flex items-center space-x-1 bg-blue-700 hover:bg-blue-800 rounded px-3 py-1 ml-2"
+      <Button
+        variant="primary"
+        size="sm"
+        className="ml-2"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
       >
         <span className="text-sm font-medium truncate max-w-[120px]">
@@ -73,11 +85,11 @@ export function UserNav() {
           strokeWidth="2" 
           strokeLinecap="round" 
           strokeLinejoin="round"
-          className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''}`}
+          className={`transition-transform ${isMenuOpen ? 'rotate-180' : ''} ml-1`}
         >
           <path d="M6 9l6 6 6-6"></path>
         </svg>
-      </button>
+      </Button>
       
       {isMenuOpen && (
         <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg py-1 w-48 z-10 top-full dark:bg-gray-800 dark:border dark:border-gray-700">
@@ -91,12 +103,13 @@ export function UserNav() {
           >
             Settings
           </Link>
-          <button
+          <Button
             onClick={handleSignOut}
-            className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700"
+            variant="ghost"
+            className="w-full text-left justify-start px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700"
           >
             Sign out
-          </button>
+          </Button>
         </div>
       )}
     </div>

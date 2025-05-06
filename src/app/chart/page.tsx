@@ -646,36 +646,36 @@ export default function ChartPage() {
           <div className="flex items-center space-x-3">
             <span className="text-sm text-gray-600">View mode:</span>
             <div className="flex items-center">
-              <button
+              <Button
                 onClick={() => setShowDailyAverages(true)}
-                className={`px-3 py-1 text-sm rounded-l ${
-                  showDailyAverages 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                className={`px-0 rounded-l ${
+                  !showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' : ''
                 }`}
+                variant={showDailyAverages ? "primary" : "outline"}
+                size="sm"
               >
                 Daily Averages
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowDailyAverages(false)}
-                className={`px-3 py-1 text-sm rounded-r ${
-                  !showDailyAverages 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                className={`px-0 rounded-r ${
+                  showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' : ''
                 }`}
+                variant={!showDailyAverages ? "primary" : "outline"}
+                size="sm"
               >
                 All Data Points
-              </button>
+              </Button>
             </div>
-            <button
+            <Button
               onClick={exportChart}
-              className={`px-3 py-1 text-sm rounded bg-green-600 text-white hover:bg-green-700 ${
-                isExporting ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              variant="success"
+              size="sm"
               disabled={isExporting}
+              isLoading={isExporting}
             >
               {isExporting ? 'Exporting...' : 'Export Chart'}
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -721,36 +721,30 @@ export default function ChartPage() {
             </div>
             
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={resetDateRange}
-                className={`px-4 py-2 rounded transition-colors ${
-                  isDarkMode 
-                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                variant="outline"
+                size="sm"
               >
                 Reset
-              </button>
+              </Button>
             </div>
           </div>
           
           <div className="mt-3 flex flex-wrap gap-2">
             <span className={`text-sm self-center mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Quick select:</span>
             {[7, 30, 90, 180, 365].map(days => (
-              <button 
+              <Button 
                 key={days}
                 onClick={() => applyPresetRange(days)} 
-                className={`px-3 py-1 text-xs rounded ${
-                  isDarkMode 
-                    ? 'bg-gray-700 hover:bg-gray-600' 
-                    : 'bg-gray-100 hover:bg-gray-200'
-                }`}
+                variant="outline"
+                size="xs"
               >
                 {days === 7 ? 'Last 7 Days' : 
                  days === 30 ? 'Last 30 Days' : 
                  days === 90 ? 'Last 3 Months' : 
                  days === 180 ? 'Last 6 Months' : 'Last Year'}
-              </button>
+              </Button>
             ))}
           </div>
           
