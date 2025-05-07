@@ -1,35 +1,41 @@
-# Weight Tracker
+# ScaleTrack
 
-A mobile-optimized web application for recording and visualizing weight data with secure user authentication.
+A mobile-optimized web application for tracking and visualizing weight data with secure user authentication.
 
 ## Table of Contents
 - [About](#about)
   - [Who Is This For?](#who-is-this-for)
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Technologies](#technologies)
+- [Project Structure](#project-structure)
 - [Deployment Instructions](#deployment-instructions)
   - [Prerequisites](#prerequisites)
-  - [Production Deployment Steps](#production-deployment-steps)
   - [Docker Deployment](#docker-deployment)
 - [Environment Variables](#environment-variables)
   - [Environment Variable Descriptions](#environment-variable-descriptions)
 - [Development Instructions](#development-instructions)
   - [Local Development Setup](#local-development-setup)
   - [Database Management](#database-management)
+- [Data Import/Export](#data-importexport)
+- [API Reference](#api-reference)
+- [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
 
 ## About
 
-Weight Tracker is designed for individuals who want to monitor their weight changes over time. The application provides an intuitive interface for recording weight measurements, viewing historical data in a tabular format, and visualizing trends through interactive charts.
+ScaleTrack is designed for individuals who want to monitor their weight changes over time. The application provides an intuitive interface for recording weight measurements, viewing historical data in a table, and visualizing trends through interactive charts.
 
-### Who Is This For?
+### Who is this for?
 
+ScaleTrack is designed for:
 - **Health-conscious individuals** tracking their weight as part of a fitness journey
 - **People with specific health goals** who need to monitor weight fluctuations
 - **Fitness coaches** who want a simple tool to track client progress
 - **Anyone interested** in logging and analyzing their weight data over time
+
+Currently, deployment requires basic knowledge of Docker and Docker Compose as the project is in an early development stage.
 
 ## Features
 
@@ -42,6 +48,26 @@ Weight Tracker is designed for individuals who want to monitor their weight chan
 - **Secure Data Storage**: Each user can only access their own data
 - **Data Filtering**: Filter chart data by date ranges
 - **Data Export**: Export chart visualizations as images
+- **Data Import**: Import weight data from Excel files (see [Import/Export](#data-importexport) section)
+- **Dark Mode**: Support for light and dark themes
+- **User Settings**: Customize application behavior and display preferences
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%"><img src="./preview/Input_HomeScreen.png" alt="Data Input Screen" width="100%"/><br><em>Home Screen - Weight Input</em></td>
+    <td width="50%"><img src="./preview/ChartWithExampleData.png" alt="Chart with Visualization" width="100%"/><br><em>Chart Visualization</em></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="./preview/TableWithExampleData.png" alt="Table View" width="100%"/><br><em>Data Table View</em></td>
+    <td width="50%"><img src="./preview/UserSettings.png" alt="User Settings" width="100%"/><br><em>User Settings</em></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="./preview/LogInPage.png" alt="Login Screen" width="100%"/><br><em>Login Screen</em></td>
+    <td width="50%"><img src="./preview/ExcelImport.png" alt="Excel Import" width="100%"/><br><em>Excel Data Import</em></td>
+  </tr>
+</table>
 
 ## Technologies
 
@@ -56,10 +82,11 @@ Weight Tracker is designed for individuals who want to monitor their weight chan
 
 ### Prerequisites
 
-- Node.js 18.17.0 or newer
-- npm or yarn package manager
+- Docker and Docker Compose
+- Git
+- SMTP server details (for password reset functionality)
 
-### Production Deployment Steps
+### Docker Deployment
 
 1. Clone the repository:
    ```bash
@@ -67,46 +94,20 @@ Weight Tracker is designed for individuals who want to monitor their weight chan
    cd weight-tracking
    ```
 
-2. Install dependencies:
+2. Create and configure the `.env` file according to the [environment variables section](#environment-variables)
+
+3. Adjust the [docker compose yaml](./compose.yaml) to your needs (add labels for traefik, etc.)
+
+4. Build and run the container:
    ```bash
-   npm install
+   docker-compose up -d --build
    ```
 
-3. Create and configure the `.env` file (see Environment Variables section below)
+5. Access the application at http://localhost:3000 (or your configured domain)
 
-4. Build the application:
+6. To stop the container:
    ```bash
-   npm run build
-   ```
-
-5. Generate the Prisma client:
-   ```bash
-   npx prisma generate
-   ```
-
-6. Run database migrations:
-   ```bash
-   npx prisma migrate deploy
-   ```
-
-7. Start the production server:
-   ```bash
-   npm start
-   ```
-
-### Docker Deployment
-
-The application includes Docker support for containerized deployment:
-
-1. Configure your `.env` file
-2. Build and start the Docker container:
-   ```bash
-   docker compose up -d
-   ```
-3. The application will be available on port 3000 (or as configured in your compose.yaml)
-4. To stop the container:
-   ```bash
-   docker compose down
+   docker-compose down
    ```
 
 ## Environment Variables
@@ -114,29 +115,41 @@ The application includes Docker support for containerized deployment:
 Create a `.env` file in the root directory with the following variables:
 
 ```
+NODE_ENV=production
+
 # Database configuration
-DATABASE_URL="file:./prisma/dev.db?connection_limit=1"
+## Default development path:
+# DATABASE_URL="file:./prisma/dev.db?connection_limit=1"
+## Default production path:
+DATABASE_URL="file:/app/data/weight-tracking.db"
 
 # NextAuth.js configuration
-NEXTAUTH_SECRET=your-secure-random-string-here
-NEXTAUTH_URL=http://your-domain.com
+NEXTAUTH_SECRET=your-nextauth-secret-key-change-in-production
+NEXTAUTH_URL=http://localhost:3000
 
 # Email configuration (for password reset)
 EMAIL_SERVER_HOST=smtp.example.com
 EMAIL_SERVER_PORT=587
 EMAIL_SERVER_USER=your-email@example.com
 EMAIL_SERVER_PASSWORD=your-email-password
-EMAIL_FROM=noreply@your-domain.com
+EMAIL_FROM=noreply@example.com
 EMAIL_SERVER_SECURE=false
+
+# Timezone configuration
+# Use IANA timezone names: Europe/Berlin for Germany (MEZ/CET)
+TIMEZONE="Europe/Berlin"
 ```
 
 ### Environment Variable Descriptions
 
-- **DATABASE_URL**: Connection string for your database (SQLite by default)
+- **NODE_ENV**: Sets application environment (production/development)
+- **DATABASE_URL**: Connection string for your database ([Prisma](https://prisma.io) by default)
 - **NEXTAUTH_SECRET**: A random string used to encrypt cookies and tokens (use a secure random generator)
 - **NEXTAUTH_URL**: The base URL of your deployed application
 - **EMAIL_SERVER_***: SMTP settings for sending password reset emails
 - **EMAIL_FROM**: The "from" address for outgoing emails
+- **EMAIL_SERVER_SECURE**: TLS setting for connection security (check with your provider whether TLS (true) is used)
+- **TIMEZONE**: Default timezone for date calculations and display
 
 ## Development Instructions
 
@@ -153,8 +166,9 @@ EMAIL_SERVER_SECURE=false
    npm install
    ```
 
-3. Create a `.env` file based on the example above, using:
+3. Create a `.env.local` file based on the example above, using:
    ```
+   DATABASE_URL="file:./prisma/dev.db?connection_limit=1"
    NEXTAUTH_SECRET=any-random-string-for-development
    NEXTAUTH_URL=http://localhost:3000
    ```
@@ -185,8 +199,41 @@ EMAIL_SERVER_SECURE=false
 
 - Reset database (deletes all data):
   ```bash
-  npx prisma migrate reset --force
+  npx prisma migrate reset
   ```
+
+## Data Import/Export
+
+### Importing Data
+
+ScaleTrack allows you to import weight data from Excel files:
+
+1. Navigate to the Import page (`/import`)
+2. Upload an Excel file (.xlsx) containing your weight data
+3. The system expects columns for date and weight measurements (up to 3 per day) with one line for headers
+
+#### Example Table for reference
+
+| date | measurement 1 | measurement 2 | measurement 3 |
+| --- | --- | --- | --- |
+| 11.08.2024 | 102.4 | | 104.4 |
+| 12.08.2024 | ... | ... | ... |
+
+### Exporting Data
+
+You can export your data in the following formats:
+
+1. **Chart Export**: From the Chart page, use the export button to save the visualization as a PNG image
+
+## Roadmap
+
+Future development plans include in no particular order:
+
+- Add image upload of scale (7 segment display) as alternative input method
+- Docker image published to docker hub
+- Table export to CSV/Excel
+- Multi-language support
+- Design improvements
 
 ## Contributing
 
