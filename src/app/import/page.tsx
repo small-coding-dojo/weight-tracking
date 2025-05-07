@@ -98,7 +98,7 @@ export default function ImportPage() {
               id="file"
               accept=".xlsx, .xls"
               onChange={handleFileChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 dark:file:bg-gray-600 dark:file:text-gray-200"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700"
               required
               disabled={isLoading}
             />
@@ -121,8 +121,8 @@ export default function ImportPage() {
                 <p className="mt-1">Successfully imported {result.imported} measurements.</p>
                 {result.errors && result.errors.length > 0 && (
                   <div className="mt-2">
-                    <h4 className="font-medium text-amber-700 dark:text-amber-300">Warnings:</h4>
-                    <ul className="list-disc pl-6 mt-1 text-sm text-amber-800 dark:text-amber-200">
+                    <h4 className="font-medium text-amber-700">Warnings:</h4>
+                    <ul className="list-disc pl-6 mt-1 text-sm text-amber-800">
                       {result.errors.map((error, i) => (
                         <li key={i}>{error}</li>
                       ))}
@@ -132,14 +132,14 @@ export default function ImportPage() {
                 <div className="mt-4">
                   <Link 
                     href="/table" 
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
+                    className="text-blue-600 hover:text-blue-800 hover:underline"
                   >
                     View data in table
                   </Link>
                   {' | '}
                   <Link 
                     href="/chart" 
-                    className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
+                    className="text-blue-600 hover:text-blue-800 hover:underline"
                   >
                     View data in chart
                   </Link>

@@ -76,7 +76,7 @@ function ResetPasswordForm() {
         <Alert variant="error">
           <p>Missing reset token. Please ensure you used the complete link from the email.</p>
           <p className="mt-4">
-            <Link href="/forgot-password" className="text-blue-600 hover:underline dark:text-blue-400">
+            <Link href="/forgot-password" className="text-blue-600 hover:underline">
               Request a new password reset
             </Link>
           </p>
@@ -93,7 +93,7 @@ function ResetPasswordForm() {
         <Alert variant="success" icon={true}>
           <p>Your password has been successfully reset.</p>
           <p className="mt-4">
-            <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
+            <Link href="/login" className="text-blue-600 hover:underline">
               Go to login
             </Link>
           </p>

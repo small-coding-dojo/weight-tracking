@@ -94,13 +94,13 @@ export function UserNav() {
       </Button>
       
       {isMenuOpen && (
-        <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg py-1 w-48 z-10 top-full dark:bg-gray-800 dark:border dark:border-gray-700">
-          <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100 dark:text-gray-400 dark:border-gray-700">
-            Signed in as <span className="font-medium text-gray-900 dark:text-white">{session.user?.email}</span>
+        <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg py-1 w-48 z-10 top-full">
+          <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">
+            Signed in as <span className="font-medium text-gray-900">{session.user?.email}</span>
           </div>
           <Link
             href="/settings"
-            className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
             onClick={() => setIsMenuOpen(false)}
           >
             Settings
@@ -108,7 +108,7 @@ export function UserNav() {
           <Button
             onClick={handleSignOut}
             variant="ghost"
-            className="w-full text-left justify-start px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700"
+            className="w-full text-left justify-start px-3 py-2 text-sm text-red-600 hover:bg-red-50"
           >
             Sign out
           </Button>

@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
         <Alert variant="success" icon={true}>
           <p>If an account exists with that email, you will receive password reset instructions.</p>
           <p className="mt-4">
-            <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
+            <Link href="/login" className="text-blue-600 hover:underline">
               Return to login
             </Link>
           </p>
@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
           </Card>
           
           <div className="mt-4 text-center">
-            <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
+            <Link href="/login" className="text-blue-600 hover:underline">
               Back to Login
             </Link>
           </div>

@@ -743,7 +743,7 @@ export default function ChartPage() {
               <Button
                 onClick={() => setShowDailyAverages(true)}
                 className={`px-0 rounded-l ${
-                  !showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' : ''
+                  !showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : ''
                 }`}
                 variant={showDailyAverages ? "primary" : "outline"}
                 size="sm"
@@ -753,7 +753,7 @@ export default function ChartPage() {
               <Button
                 onClick={() => setShowDailyAverages(false)}
                 className={`px-0 rounded-r ${
-                  showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' : ''
+                  showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : ''
                 }`}
                 variant={!showDailyAverages ? "primary" : "outline"}
                 size="sm"

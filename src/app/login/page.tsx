@@ -85,14 +85,14 @@ export default function LoginPage() {
       </Card>
       
       <div className="mt-4 text-center">
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600">
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link href="/register" className="text-blue-600 hover:underline">
             Register
           </Link>
         </p>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          <Link href="/forgot-password" className="text-blue-600 hover:underline dark:text-blue-400">
+        <p className="text-gray-600">
+          <Link href="/forgot-password" className="text-blue-600 hover:underline">
             Forgot your password?
           </Link>
         </p>

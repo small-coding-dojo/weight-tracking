@@ -114,7 +114,7 @@ export default function Home() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any relevant notes"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
             />
           </div>
           

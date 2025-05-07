@@ -114,9 +114,9 @@ export default function RegisterPage() {
       </Card>
       
       <div className="mt-4 text-center">
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-600">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link href="/login" className="text-blue-600 hover:underline">
             Log In
           </Link>
         </p>
