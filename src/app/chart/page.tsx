@@ -64,106 +64,200 @@ export default function ChartPage() {
   const [isExporting, setIsExporting] = useState(false);
 
   const isDarkMode = useDarkMode();
-
-  // Export chart as image
+  
+  // Export chart as HD image
   const exportChart = useCallback(() => {
-    if (chartRef.current) {
-      setIsExporting(true);
+    if (!chartRef.current) return;
+    setIsExporting(true);
+    
+    try {
+      // Define HD dimensions - 1920px width is standard HD width
+      const HD_WIDTH = 3840;//1920;
+      const HD_HEIGHT = 2160;//1080;
       
+      // Create a high-resolution canvas for rendering
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = HD_WIDTH;
+      exportCanvas.height = HD_HEIGHT;
+      
+      const ctx = exportCanvas.getContext('2d');
+      if (!ctx) {
+        throw new Error("Could not get canvas context");
+      }
+      
+      // Fill with white background
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, HD_WIDTH, HD_HEIGHT);
+      
+      // Calculate layout dimensions
+      const padding = Math.round(HD_WIDTH * 0.05); // 5% padding
+      const titleHeight = Math.round(HD_HEIGHT * 0.1); // 10% for title area
+      const chartWidth = HD_WIDTH - (padding * 2);
+      const chartHeight = HD_HEIGHT - titleHeight - (padding * 2);
+      
+      // Add title with appropriate font size
+      const titleFontSize = Math.round(HD_WIDTH * 0.025); // 2.5% of width
+      ctx.fillStyle = 'black';
+      ctx.font = `bold ${titleFontSize}px Arial, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText('Weight Tracking Chart', HD_WIDTH / 2, titleHeight / 2);
+      
+      // Add date range if filtering is applied
+      if (dateRange.startDate || dateRange.endDate) {
+        const subtitleFontSize = Math.round(HD_WIDTH * 0.015); // 1.5% of width
+        ctx.font = `${subtitleFontSize}px Arial, sans-serif`;
+        ctx.fillStyle = '#666';
+        ctx.fillText(
+          `Period: ${dateRange.startDate || 'Start'} to ${dateRange.endDate || 'End'}`, 
+          HD_WIDTH / 2, 
+          titleHeight / 2 + subtitleFontSize * 1.5
+        );
+      }
+      
+      // Create a temporary container for the new chart
+      const tempContainer = document.createElement('div');
+      tempContainer.style.width = `${chartWidth}px`;
+      tempContainer.style.height = `${chartHeight}px`;
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '-9999px';
+      document.body.appendChild(tempContainer);
+      
+      // Create a canvas element for the high-res chart
+      const hdChartCanvas = document.createElement('canvas');
+      hdChartCanvas.width = chartWidth;
+      hdChartCanvas.height = chartHeight;
+      tempContainer.appendChild(hdChartCanvas);
+      
+      // Clone the current chart configuration for HD rendering
+      const hdChartConfig = {
+        type: 'line',
+        data: JSON.parse(JSON.stringify(chartRef.current.data)),
+        options: {
+          ...JSON.parse(JSON.stringify(chartRef.current.options)),
+          responsive: false,
+          maintainAspectRatio: false,
+          devicePixelRatio: 2, // Higher DPR for sharper rendering
+          animation: false, // Disable animations for export
+          plugins: {
+            ...JSON.parse(JSON.stringify(chartRef.current.options.plugins)),
+            legend: {
+              ...JSON.parse(JSON.stringify(chartRef.current.options.plugins?.legend)),
+              labels: {
+                ...JSON.parse(JSON.stringify(chartRef.current.options.plugins?.legend?.labels)),
+                font: {
+                  size: Math.round(HD_WIDTH * 0.014), // Larger font size for legend
+                  family: 'Arial, sans-serif'
+                }
+              }
+            },
+            tooltip: {
+              enabled: false // Disable tooltips in export
+            }
+          },
+          scales: {
+            x: {
+              ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.x)),
+              ticks: {
+                ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.x?.ticks)),
+                font: {
+                  size: Math.round(HD_WIDTH * 0.012),
+                  family: 'Arial, sans-serif'
+                },
+                color: 'rgba(0, 0, 0, 0.7)' // Force black for export
+              },
+              grid: {
+                ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.x?.grid)),
+                color: 'rgba(0, 0, 0, 0.1)' // Force light grid for export
+              }
+            },
+            y: {
+              ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.y)),
+              ticks: {
+                ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.y?.ticks)),
+                font: {
+                  size: Math.round(HD_WIDTH * 0.012),
+                  family: 'Arial, sans-serif'
+                },
+                color: 'rgba(0, 0, 0, 0.7)' // Force black for export
+              },
+              grid: {
+                ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.y?.grid)),
+                color: 'rgba(0, 0, 0, 0.1)' // Force light grid for export
+              }
+            }
+          }
+        }
+      };
+      
+      // Enhance dataset visuals for HD
+      hdChartConfig.data.datasets = hdChartConfig.data.datasets.map((dataset: {
+        borderWidth?: number;
+        pointRadius?: number;
+      }) => ({
+        ...dataset,
+        borderWidth: dataset.borderWidth ? dataset.borderWidth * 1.5 : 2, // Thicker lines
+        pointRadius: dataset.pointRadius ? dataset.pointRadius * 1.5 : 0 // Larger points
+      }));
+      
+      // Create a new Chart.js instance for the HD export
+      const hdChartInstance = new ChartJS(hdChartCanvas, hdChartConfig);
+      
+      // Wait for the chart to render
       setTimeout(() => {
         try {
-          // Add null check before accessing canvas property
-          if (!chartRef.current) {
-            setIsExporting(false);
-            return;
-          }
+          // Draw the HD chart onto our main export canvas
+          ctx.drawImage(hdChartCanvas, padding, titleHeight, chartWidth, chartHeight);
           
-          // Access the canvas element through the Chart instance
-          const canvas = chartRef.current.canvas;
+          // Add watermark/info at the bottom right
+          const footerFontSize = Math.round(HD_WIDTH * 0.01);
+          ctx.font = `${footerFontSize}px Arial, sans-serif`;
+          ctx.fillStyle = '#999';
+          ctx.textAlign = 'right';
+          /*
+          ctx.fillText(
+            `HD Export (${HD_WIDTH}×${HD_HEIGHT})`, 
+            HD_WIDTH - padding, 
+            HD_HEIGHT - padding / 2
+          );
+          */
           
-          // Create a container for the chart image with some padding and background
-          const exportContainer = document.createElement('div');
-          exportContainer.style.padding = '20px';
-          exportContainer.style.backgroundColor = 'white';
-          exportContainer.style.borderRadius = '8px';
-          exportContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-          exportContainer.style.position = 'absolute';
-          exportContainer.style.left = '-9999px';
-          document.body.appendChild(exportContainer);
-          
-          // Add title
-          const title = document.createElement('h2');
-          title.textContent = 'Weight Tracking Chart';
-          title.style.marginBottom = '10px';
-          title.style.fontFamily = 'Arial, sans-serif';
-          title.style.fontSize = '18px';
-          title.style.textAlign = 'center';
-          exportContainer.appendChild(title);
-          
-          // Add date range info if filtering
-          if (dateRange.startDate || dateRange.endDate) {
-            const dateInfo = document.createElement('p');
-            dateInfo.textContent = `Period: ${dateRange.startDate || 'Start'} to ${dateRange.endDate || 'End'}`;
-            dateInfo.style.marginBottom = '15px';
-            dateInfo.style.fontFamily = 'Arial, sans-serif';
-            dateInfo.style.fontSize = '14px';
-            dateInfo.style.textAlign = 'center';
-            dateInfo.style.color = '#666';
-            exportContainer.appendChild(dateInfo);
-          }
-          
-          // Create a copy of the canvas
-          const chartImg = document.createElement('img');
-          chartImg.src = canvas.toDataURL('image/png');
-          chartImg.style.maxWidth = '100%';
-          chartImg.style.height = 'auto';
-          exportContainer.appendChild(chartImg);
-          
-          // Wait for the image to load
-          chartImg.onload = () => {
-            // Create a new canvas to combine all elements
-            const finalCanvas = document.createElement('canvas');
-            const ctx = finalCanvas.getContext('2d');
-            
-            if (ctx) {
-              // Set dimensions to match container with padding
-              finalCanvas.width = exportContainer.offsetWidth;
-              finalCanvas.height = exportContainer.offsetHeight;
-              
-              // Use html2canvas to capture the entire container with styling
-              import('html2canvas').then(({ default: html2canvas }) => {
-                html2canvas(exportContainer, { backgroundColor: 'white' }).then(canvas => {
-                  // Create download link
-                  const link = document.createElement('a');
-                  
-                  // Generate filename with date
-                  const today = new Date();
-                  const formattedDate = today.toISOString().split('T')[0];
-                  const fileName = `weight-chart-${formattedDate}.png`;
-                  
-                  link.download = fileName;
-                  link.href = canvas.toDataURL('image/png');
-                  link.click();
-                  
-                  // Clean up
-                  document.body.removeChild(exportContainer);
-                  setIsExporting(false);
-                });
-              }).catch(err => {
-                console.error("Failed to load html2canvas:", err);
-                setIsExporting(false);
-                document.body.removeChild(exportContainer);
-              });
-            } else {
-              setIsExporting(false);
-              document.body.removeChild(exportContainer);
+          // Convert to blob and download
+          exportCanvas.toBlob((blob) => {
+            if (!blob) {
+              throw new Error("Failed to create image blob");
             }
-          };
+            
+            // Clean up temporary elements
+            hdChartInstance.destroy();
+            document.body.removeChild(tempContainer);
+            
+            // Create a download link
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            const fileName = `weight-chart-${formattedDate}.png`;
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+            
+            // Clean up object URL
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
+            setIsExporting(false);
+          }, 'image/png', 1.0); // Use maximum quality
         } catch (err) {
-          console.error("Error exporting chart:", err);
+          console.error("Error during chart export:", err);
+          hdChartInstance.destroy();
+          document.body.removeChild(tempContainer);
           setIsExporting(false);
+          alert("Failed to export chart. Please try again.");
         }
       }, 200); // Small delay to ensure chart is rendered fully
+    } catch (err) {
+      console.error("Error setting up chart export:", err);
+      setIsExporting(false);
+      alert("Failed to export chart. Please try again.");
     }
   }, [chartRef, dateRange.startDate, dateRange.endDate]);
 
