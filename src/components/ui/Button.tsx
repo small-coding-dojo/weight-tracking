@@ -1,8 +1,8 @@
 'use client';
 
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
-import { useDarkMode } from '@/hooks/useDarkMode';
 import { Slot } from '@radix-ui/react-slot';
+import { useDarkMode } from '@/hooks/useDarkMode';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'outline' | 'ghost';
@@ -37,22 +37,28 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'px-6 py-3 text-lg',
       icon: 'p-2 aspect-square',
     };
+    const disabledStyle = disabled || isLoading ? 'opacity-50 cursor-not-allowed' : '';
+    const getLightVariantStyles = () => ({
+      primary: `bg-blue-600 hover:bg-blue-700 text-white ${disabledStyle}`,
+      secondary: `bg-gray-100 text-gray-700 hover:bg-gray-200`,
+      danger: `bg-red-600 hover:bg-red-700 text-white ${disabledStyle}`,
+      success: `bg-green-600 hover:bg-green-700 text-white ${disabledStyle}`,
+      outline: `border border-gray-300 text-gray-700 hover:bg-gray-50`,
+      ghost: `text-gray-700 hover:bg-gray-100 hover:text-gray-800`,
+    });
+
+    const getDarkVariantStyles = () => ({
+      primary: `bg-blue-600 hover:bg-blue-700 text-white ${disabledStyle}`,
+      secondary: `bg-gray-700 text-gray-300 hover:bg-gray-600`,
+      danger: `bg-red-600 hover:bg-red-700 text-white ${disabledStyle}`,
+      success: `bg-green-600 hover:bg-green-700 text-white ${disabledStyle}`,
+      outline: `border border-gray-600 text-gray-300 hover:bg-gray-700`,
+      ghost: `text-gray-300 hover:bg-gray-800 hover:text-gray-100`,
+    });
+
     
-    const variantStyles = {
-      primary: `bg-blue-600 hover:bg-blue-700 text-white ${disabled || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
-      secondary: isDarkMode 
-        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-        : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-      danger: `bg-red-600 hover:bg-red-700 text-white ${disabled || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
-      success: `bg-green-600 hover:bg-green-700 text-white ${disabled || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`,
-      outline: isDarkMode
-        ? 'border border-gray-600 text-gray-300 hover:bg-gray-700'
-        : 'border border-gray-300 text-gray-700 hover:bg-gray-50',
-      ghost: isDarkMode
-        ? 'text-gray-300 hover:bg-gray-800 hover:text-gray-100'
-        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-800',
-    };
     
+    const variantStyles = isDarkMode ? getDarkVariantStyles() : getLightVariantStyles();
     const widthStyle = fullWidth ? 'w-full' : '';
     
     return (

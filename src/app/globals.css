@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
 :root {
+  /* Legacy variables - keeping for compatibility */
   --background: #ffffff;
   --foreground: #171717;
 }
 
 .dark {
+  /* Legacy variables - keeping for compatibility */
   --background: #0a0a0a;
   --foreground: #ededed;
 }
@@ -24,47 +26,101 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Add Tailwind dark mode utilities */
+/* Theme color system */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
+    /* Base theme colors */
+    --theme-background: 0 0% 100%;
+    --theme-foreground: 222.2 84% 4.9%;
+    --theme-card: 0 0% 100%;
+    --theme-card-foreground: 222.2 84% 4.9%;
+    --theme-popover: 0 0% 100%;
+    --theme-popover-foreground: 222.2 84% 4.9%;
+    
+    /* Primary color (blue) */
+    --primary: 221.2 83.2% 53.3%; /* blue-600 */
     --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
+    --primary-hover: 224.4 76.3% 48%; /* blue-700 */
+    
+    /* Secondary color (gray) */
+    --secondary: 210 40% 96.1%; /* gray-100 */
     --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-hover: 210 38% 95%; /* gray-200 */
+    
+    /* Destructive/Danger color (red) */
+    --destructive: 0 84.2% 60.2%; /* red-600 */
+    --destructive-foreground: 210 40% 98%;
+    --destructive-hover: 0 84.2% 50%; /* red-700 */
+    
+    /* Success color (green) */
+    --success: 142.1 76.2% 36.3%; /* green-600 */
+    --success-foreground: 210 40% 98%;
+    --success-hover: 142.1 70.6% 32.3%; /* green-700 */
+    
+    /* Warning color (amber) */
+    --warning: 38 92% 50%; /* amber-500 */
+    --warning-foreground: 222.2 84% 4.9%;
+    --warning-hover: 32 95% 44%; /* amber-600 */
+    
+    /* Info color (blue) */
+    --info: 217.2 91.2% 59.8%; /* blue-500 */
+    --info-foreground: 222.2 84% 4.9%;
+    --info-hover: 221.2 83.2% 53.3%; /* blue-600 */
+    
+    /* Other UI colors */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
+    /* Base theme colors for dark mode */
+    --theme-background: 222.2 84% 4.9%;
+    --theme-foreground: 210 40% 98%;
+    --theme-card: 222.2 84% 4.9%;
+    --theme-card-foreground: 210 40% 98%;
+    --theme-popover: 222.2 84% 4.9%;
+    --theme-popover-foreground: 210 40% 98%;
+    
+    /* Primary color (blue) for dark mode */
+    --primary: 217.2 91.2% 59.8%; /* blue-500 */
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary-hover: 221.2 83.2% 53.3%; /* blue-600 */
+    
+    /* Secondary color (gray) for dark mode */
+    --secondary: 217.2 32.6% 17.5%; /* gray-700 */
     --secondary-foreground: 210 40% 98%;
+    --secondary-hover: 215 28% 17%; /* gray-600 */
+    
+    /* Destructive/Danger color (red) for dark mode */
+    --destructive: 0 84.2% 60.2%; /* red-600 */
+    --destructive-foreground: 210 40% 98%;
+    --destructive-hover: 0 70% 45%; /* red-700 darker in dark mode */
+    
+    /* Success color (green) for dark mode */
+    --success: 142.1 76.2% 45%; /* green-600 adjusted for dark mode */
+    --success-foreground: 210 40% 98%;
+    --success-hover: 142.1 70.6% 40%; /* green-700 adjusted for dark mode */
+    
+    /* Warning color (amber) for dark mode */
+    --warning: 38 92% 50%; /* amber-500 */
+    --warning-foreground: 0 0% 98%;
+    --warning-hover: 32 95% 44%; /* amber-600 */
+    
+    /* Info color (blue) for dark mode */
+    --info: 217.2 91.2% 59.8%; /* blue-500 */
+    --info-foreground: 0 0% 98%;
+    --info-hover: 221.2 83.2% 53.3%; /* blue-600 */
+    
+    /* Other UI colors for dark mode */
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;

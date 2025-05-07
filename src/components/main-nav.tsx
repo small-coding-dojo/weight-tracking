@@ -2,10 +2,17 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 export function MainNav() {
   const { status } = useSession();
   const isAuthenticated = status === 'authenticated';
+  const [isDev, setIsDev] = useState(false);
+  
+  useEffect(() => {
+    // Only show design system link in development mode
+    setIsDev(process.env.NODE_ENV === 'development');
+  }, []);
   
   if (!isAuthenticated) {
     return null;
@@ -31,6 +38,14 @@ export function MainNav() {
       >
         Chart
       </Link>
+      {isDev && (
+        <Link 
+          href="/design-system" 
+          className="px-3 py-2 rounded hover:bg-blue-700 transition-colors text-amber-300"
+        >
+          Design System
+        </Link>
+      )}
     </nav>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import { HTMLAttributes, forwardRef } from 'react';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { HTMLAttributes, forwardRef } from 'react';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'outline';
@@ -11,12 +11,10 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ variant = 'default', padded = true, className = '', children, ...props }, ref) => {
     const isDarkMode = useDarkMode();
-    
+
     const variantStyles = {
       default: isDarkMode ? 'bg-gray-800' : 'bg-white',
-      outline: isDarkMode 
-        ? 'bg-transparent border border-gray-700' 
-        : 'bg-transparent border border-gray-200',
+      outline: isDarkMode ? 'bg-transparent border border-gray-700' : 'bg-transparent border border-gray-200',
     };
     
     const paddingStyle = padded ? 'p-6' : '';

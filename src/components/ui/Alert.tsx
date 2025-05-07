@@ -13,20 +13,21 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
   ({ variant, title, icon = true, className = '', children, ...props }, ref) => {
     const isDarkMode = useDarkMode();
     
-    const variantStyles = {
-      success: isDarkMode 
-        ? 'bg-green-900 border-green-800 text-green-200' 
-        : 'bg-green-50 border border-green-200 text-green-800',
-      error: isDarkMode 
-        ? 'bg-red-900 border-red-800 text-red-200' 
-        : 'bg-red-50 border border-red-200 text-red-800',
-      warning: isDarkMode 
-        ? 'bg-amber-900 border-amber-800 text-amber-200' 
-        : 'bg-amber-50 border border-amber-200 text-amber-800',
-      info: isDarkMode 
-        ? 'bg-blue-900 border-blue-800 text-blue-200' 
-        : 'bg-blue-50 border border-blue-200 text-blue-800',
-    };
+    const getLightVariantStyles = () => ({
+      success: 'bg-green-50 border border-green-200 text-green-800',
+      error: 'bg-red-50 border border-red-200 text-red-800',
+      warning: 'bg-amber-50 border border-amber-200 text-amber-800',
+      info: 'bg-blue-50 border border-blue-200 text-blue-800',
+    });
+    
+    const getDarkVariantStyles = () => ({
+      success: 'bg-green-900 border-green-800 text-green-200',
+      error: 'bg-red-900 border-red-800 text-red-200',
+      warning: 'bg-amber-900 border-amber-800 text-amber-200',
+      info: 'bg-blue-900 border-blue-800 text-blue-200',
+    });
+    
+    const variantStyles = isDarkMode ? getDarkVariantStyles() : getLightVariantStyles();
     
     const iconMap = {
       success: (

@@ -742,9 +742,7 @@ export default function ChartPage() {
             <div className="flex items-center">
               <Button
                 onClick={() => setShowDailyAverages(true)}
-                className={`px-0 rounded-l ${
-                  !showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : ''
-                }`}
+                className={`px-0 rounded-l`}
                 variant={showDailyAverages ? "primary" : "outline"}
                 size="sm"
               >
@@ -752,9 +750,7 @@ export default function ChartPage() {
               </Button>
               <Button
                 onClick={() => setShowDailyAverages(false)}
-                className={`px-0 rounded-r ${
-                  showDailyAverages ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : ''
-                }`}
+                className={`px-0 rounded-r`}
                 variant={!showDailyAverages ? "primary" : "outline"}
                 size="sm"
               >
