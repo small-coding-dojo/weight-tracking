@@ -73,7 +73,7 @@ export function ColorTokens() {
       <div>
         <h1 className="text-2xl font-bold mb-2">Color System</h1>
         <p className={`text-${isDarkMode ? 'gray-400' : 'gray-600'}`}>
-          This reference shows all available colors in the application's color system.
+          This reference shows all available colors in the application&apos;s color system.
           Use these consistent colors throughout the application.
         </p>
       </div>

@@ -1,16 +1,32 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { ColorTokens } from '@/components/design-system/ColorTokens';
 import { Card } from '@/components/ui/Card';
 import { ColorButton } from '@/components/design-system/ColorButton';
 import { colorPalette } from '@/lib/color-utils';
 import { useDarkMode } from '@/hooks/useDarkMode';
+import { Alert } from '@/components/ui/Alert';
 
 export default function DesignSystemPage() {
   const isDarkMode = useDarkMode();
-  // Create an array of all available color variants
+  const router = useRouter();
   const colorVariants = Object.keys(colorPalette) as Array<keyof typeof colorPalette>;
 
+  useEffect(() => {
+    // Check if we're in production environment
+    if (process.env.NODE_ENV === 'production') {
+      router.replace('/');
+    }
+  }, [router]);
+
+  // If in production, return nothing while redirecting
+  if (process.env.NODE_ENV === 'production') {
+    return null;
+  }
+
+  // Only render in development environment
   return (
     <div className="container mx-auto py-8 px-4">
       <Card className="mb-8">
@@ -21,6 +37,9 @@ export default function DesignSystemPage() {
         <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
           Use this reference to ensure consistency when developing new features.
         </p>
+        <Alert className="mt-4 p-3 rounded-md" variant="warning">
+            <strong>Development Only:</strong> This page is only visible in development mode and will not be accessible in production.
+        </Alert>
       </Card>
       
       <Card className="mb-8">
