@@ -45,15 +45,17 @@ export function UserNav() {
           variant="ghost"
           size="sm"
           asChild
+          className="text-white"
         >
           <Link href="/login">
             Log in
           </Link>
         </Button>
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           asChild
+          className="text-white border border-gray-300"
         >
           <Link href="/register">
             Register
