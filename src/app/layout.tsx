@@ -8,8 +8,8 @@ import { MainNav } from "@/components/main-nav";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Data Tracker",
-  description: "A mobile application for data tracking",
+  title: "ScaleTrack",
+  description: "Track and visualize your weight journey",
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
             <header className="bg-blue-600 text-white shadow-md dark:bg-blue-800">
               <div className="container mx-auto px-4 py-4">
                 <div className="flex justify-between items-center mb-3">
-                  <h1 className="text-xl font-bold">Data Tracker</h1>
+                  <h1 className="text-xl font-bold">ScaleTrack</h1>
                   <UserNav />
                 </div>
                 <MainNav />
@@ -41,7 +41,17 @@ export default function RootLayout({
             {/* Footer */}
             <footer className="bg-gray-100 border-t dark:bg-gray-800 dark:border-gray-700">
               <div className="container mx-auto p-4 text-center text-sm text-gray-600 dark:text-gray-400">
-                &copy; 2025 Data Tracker - Mobile optimized application
+                <div className="flex flex-col md:flex-row justify-between items-center">
+                  <div>&copy; {new Date().getFullYear()} ScaleTrack</div>
+                  <div className="mt-2 md:mt-0">Track your progress, achieve your goals</div>
+                  {/* 
+                  <div className="mt-2 md:mt-0 flex space-x-4">
+                    <a href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400">Privacy</a>
+                    <a href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400">Terms</a>
+                    <a href="/help" className="hover:text-blue-600 dark:hover:text-blue-400">Help</a>
+                  </div>
+                  */}
+                </div>
               </div>
             </footer>
           </div>
