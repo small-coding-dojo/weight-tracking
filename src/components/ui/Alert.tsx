@@ -1,7 +1,7 @@
 'use client';
 
 import { HTMLAttributes, forwardRef } from 'react';
-import { useDarkMode } from '@/hooks/useDarkMode';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
   variant: 'success' | 'error' | 'warning' | 'info';
@@ -11,23 +11,19 @@ export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
 
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(
   ({ variant, title, icon = true, className = '', children, ...props }, ref) => {
-    const isDarkMode = useDarkMode();
-    
-    const getLightVariantStyles = () => ({
-      success: 'bg-green-50 border border-green-200 text-green-800',
-      error: 'bg-red-50 border border-red-200 text-red-800',
-      warning: 'bg-amber-50 border border-amber-200 text-amber-800',
-      info: 'bg-blue-50 border border-blue-200 text-blue-800',
-    });
-    
-    const getDarkVariantStyles = () => ({
-      success: 'bg-green-900 border-green-800 text-green-200',
-      error: 'bg-red-900 border-red-800 text-red-200',
-      warning: 'bg-amber-900 border-amber-800 text-amber-200',
-      info: 'bg-blue-900 border-blue-800 text-blue-200',
-    });
-    
-    const variantStyles = isDarkMode ? getDarkVariantStyles() : getLightVariantStyles();
+        
+    // Use the getAlertStyles utility function to get appropriate color classes
+    const success = useThemeColor("Main", "Success");
+    const destructive = useThemeColor("Main", "Destructive");
+    const warning = useThemeColor("Main", "Warning");
+    const info = useThemeColor("Info", "Info");
+
+    const alertStyles = {
+      "success": success,
+      "error": destructive,
+      "warning": warning,
+      "info": info,
+    }
     
     const iconMap = {
       success: (
@@ -55,7 +51,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
     return (
       <div
         ref={ref}
-        className={`p-4 rounded-md ${variantStyles[variant]} ${className}`}
+        className={`p-4 rounded-md ${alertStyles[variant]} ${className}`}
         {...props}
       >
         <div className="flex">

@@ -2,16 +2,18 @@
 
 import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/Button';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const onPrimary = useThemeColor('On', 'Primary');
 
   return (
     <div className="relative inline-block">
       <Button
         variant="ghost"
         size="icon"
-        className="text-white"
+        className={onPrimary}
         onClick={() => {
           setTheme(theme === 'dark' ? 'light' : theme === 'light' ? 'system' : 'dark');
         }}

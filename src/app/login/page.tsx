@@ -8,6 +8,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { FormInput } from '@/components/ui/FormInput';
 import { Card } from '@/components/ui/Card';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,6 +16,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const primaryText = useThemeColor('Text', 'Primary');
+  const onSecondaryText = useThemeColor('On', 'Secondary');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -85,14 +89,14 @@ export default function LoginPage() {
       </Card>
       
       <div className="mt-4 text-center">
-        <p className="text-gray-600">
+        <p className={onSecondaryText}>
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-blue-600 hover:underline">
+          <Link href="/register" className={`${primaryText} hover:underline`}>
             Register
           </Link>
         </p>
-        <p className="text-gray-600">
-          <Link href="/forgot-password" className="text-blue-600 hover:underline">
+        <p>
+          <Link href="/forgot-password" className={`${primaryText} hover:underline`}>
             Forgot your password?
           </Link>
         </p>

@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useDarkMode } from '@/hooks/useDarkMode';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 type UserEntry = {
   id: string;
@@ -16,7 +16,6 @@ type UserEntry = {
 };
 
 export default function TablePage() {
-  const isDarkMode = useDarkMode();
   const { data: session, status } = useSession();
   const router = useRouter();
   const [entries, setEntries] = useState<UserEntry[]>([]);
@@ -25,6 +24,13 @@ export default function TablePage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
+
+  const secondary = useThemeColor("Main", "Secondary");
+  const secondaryHover = useThemeColor("Hover", "Secondary");
+  const onSecondary = useThemeColor("On", "Secondary");
+  const destructiveText = useThemeColor("Text", "Destructive");
+  const destructiveHover = useThemeColor("Text Hover", "Destructive");
+  const primaryBorder = useThemeColor("Border", "Primary");
 
   const loadEntries = useCallback(async () => {
     try {
@@ -125,7 +131,7 @@ export default function TablePage() {
   if (status === 'loading' || loading) {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        <div className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}></div>
       </div>
     );
   }
@@ -174,9 +180,9 @@ export default function TablePage() {
         </Alert>
       ) : (
         <div className="overflow-x-auto">
-          <table className={`w-full text-left border-collapse ${isDarkMode ? 'text-gray-200' : ''}`}>
+          <table className={`w-full text-left border-collapse ${onSecondary}`}>
             <thead>
-              <tr className={`${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-100 border-b'}`}>
+              <tr className={`${secondary}`}>
                 <th className="p-3">Date</th>
                 <th className="p-3">Value</th>
                 <th className="p-3">Notes</th>
@@ -187,9 +193,7 @@ export default function TablePage() {
               {entries.map(entry => (
                 <tr 
                   key={entry.id} 
-                  className={`${isDarkMode 
-                    ? 'border-gray-700 hover:bg-gray-800 text-gray-300' 
-                    : 'border-b hover:bg-gray-50'}`}
+                  className={`${secondaryHover} ${onSecondary}`}
                 >
                   <td className="p-3">{formatDate(entry.date)}</td>
                   <td className="p-3 font-medium">{entry.value}</td>
@@ -199,7 +203,7 @@ export default function TablePage() {
                       onClick={() => setSelectedEntryId(entry.id)}
                       variant="ghost"
                       size="icon"
-                      className={`text-red-600 hover:text-red-800`}
+                      className={`${destructiveText} ${destructiveHover}`}
                       disabled={isDeleting}
                       title="Delete entry"
                     >
@@ -217,7 +221,7 @@ export default function TablePage() {
 
       {/* Single Entry Delete Confirmation Modal */}
       {selectedEntryId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
           <Card className="max-w-md w-full">
             <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
             <p>Are you sure you want to delete this entry? This action cannot be undone.</p>
@@ -245,7 +249,7 @@ export default function TablePage() {
 
       {/* Delete All Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
           <Card className="max-w-md w-full">
             <h3 className="text-lg font-semibold mb-4">Delete All Entries</h3>
             <p>Are you sure you want to delete all entries? This action cannot be undone.</p>

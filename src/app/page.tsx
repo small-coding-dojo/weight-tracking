@@ -7,6 +7,7 @@ import { Alert } from '@/components/ui/Alert';
 import { FormInput } from '@/components/ui/FormInput';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -16,6 +17,9 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const primaryBorder = useThemeColor('Border', 'Primary');
+  const onSecondary = useThemeColor('On', 'Secondary');
 
   // Redirect to login page if not authenticated
   useEffect(() => {
@@ -28,7 +32,7 @@ export default function Home() {
   if (status === 'loading') {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        <div className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}></div>
       </div>
     );
   }
@@ -78,7 +82,7 @@ export default function Home() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Data Entry</h1>
+      <h1 className={`text-2xl font-bold mb-6 ${onSecondary}`}>Data Entry</h1>
       
       {error && (
         <Alert variant="error" className="mb-4">
@@ -92,7 +96,7 @@ export default function Home() {
         </Alert>
       )}
       
-      <Card>
+       <Card>
         <form onSubmit={handleSubmit} className="space-y-4">
           <FormInput
             type="number"
@@ -104,20 +108,15 @@ export default function Home() {
             placeholder="Enter a value"
             required
           />
-          
-          <div>
-            <label htmlFor="notes" className="block text-sm font-medium mb-1">
-              Notes (optional)
-            </label>
-            <textarea
-              id="notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add any relevant notes"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
-            />
-          </div>
-          
+          <FormInput
+            type="text"
+            id="notes"
+            label="Notes (optional)"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add any relevant notes"
+            className={`w-full px-4 py-2 border rounded-md`}
+          />
           <Button
             type="submit"
             disabled={isSubmitting}

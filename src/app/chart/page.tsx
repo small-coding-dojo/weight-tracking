@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Line } from 'react-chartjs-2';
-import { useDarkMode } from '@/hooks/useDarkMode';
 import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import {
@@ -38,6 +37,9 @@ type UserEntry = {
 
 // Import Chart type from chart.js
 import { Chart } from 'chart.js';
+import { Card } from '@/components/ui/Card';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import ThemeManager from '@/lib/ThemeManager';
 
 export default function ChartPage() {
   const { data: session, status } = useSession();
@@ -62,8 +64,12 @@ export default function ChartPage() {
   // Update the ref type to use the proper Chart.js type
   const chartRef = useRef<Chart<'line', (number | null)[], string> | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const onSecondary = useThemeColor("On", "Secondary");
+  const focusRing = useThemeColor("Focus Ring", "Assets");
+  const infoText = useThemeColor("Text", "Info");
+  const destructiveText = useThemeColor("Text", "Destructive");
 
-  const isDarkMode = useDarkMode();
+  const isDarkMode = ThemeManager.getInstance().isDarkMode;
   
   // Export chart as HD image
   const exportChart = useCallback(() => {
@@ -71,9 +77,9 @@ export default function ChartPage() {
     setIsExporting(true);
     
     try {
-      // Define HD dimensions - 1920px width is standard HD width
-      const HD_WIDTH = 3840;//1920;
-      const HD_HEIGHT = 2160;//1080;
+      // Set export canvas dimensions
+      const HD_WIDTH = 3840;
+      const HD_HEIGHT = 2160;
       
       // Create a high-resolution canvas for rendering
       const exportCanvas = document.createElement('canvas');
@@ -148,7 +154,8 @@ export default function ChartPage() {
                 font: {
                   size: Math.round(HD_WIDTH * 0.014), // Larger font size for legend
                   family: 'Arial, sans-serif'
-                }
+                },
+                color: 'rgba(0, 0, 0, 0.7)' // Force black labels for export
               }
             },
             tooltip: {
@@ -164,11 +171,11 @@ export default function ChartPage() {
                   size: Math.round(HD_WIDTH * 0.012),
                   family: 'Arial, sans-serif'
                 },
-                color: 'rgba(0, 0, 0, 0.7)' // Force black for export
+                color: 'rgba(0, 0, 0, 0.7)' // Force black date description for export
               },
               grid: {
                 ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.x?.grid)),
-                color: 'rgba(0, 0, 0, 0.1)' // Force light grid for export
+                color: 'rgba(0, 0, 0, 0.2)' // Force light grid for export
               }
             },
             y: {
@@ -179,11 +186,11 @@ export default function ChartPage() {
                   size: Math.round(HD_WIDTH * 0.012),
                   family: 'Arial, sans-serif'
                 },
-                color: 'rgba(0, 0, 0, 0.7)' // Force black for export
+                color: 'rgba(0, 0, 0, 0.7)' // Force black weight description for export
               },
               grid: {
                 ...JSON.parse(JSON.stringify(chartRef.current.options.scales?.y?.grid)),
-                color: 'rgba(0, 0, 0, 0.1)' // Force light grid for export
+                color: 'rgba(0, 0, 0, 0.2)' // Force light grid for export
               }
             }
           }
@@ -647,9 +654,8 @@ export default function ChartPage() {
         label: showDailyAverages ? 'Daily Average' : 'Individual Measurements',
         data: dataPoints,
         borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        backgroundColor: 'rgba(59, 130, 246, 0.5)',
         tension: 0.2,
-        fill: true,
         pointRadius: 4,
         pointBackgroundColor: 'rgb(59, 130, 246)',
       },
@@ -657,38 +663,38 @@ export default function ChartPage() {
         label: 'Trend Line',
         data: filteredTrendLineData,
         borderColor: 'rgba(255, 99, 132, 0.8)',
+        backgroundColor: 'rgba(255, 99, 132, 0.4)',
         borderWidth: 2,
         borderDash: [5, 5],
         pointRadius: 0,
-        fill: false,
         tension: 0,
       },
       {
         label: 'Floor Line',
         data: filteredFloorLineData,
         borderColor: 'lime',
+        backgroundColor: 'rgba(0, 255, 0, 0.4)',
         borderWidth: 2,
         pointRadius: 0,
-        fill: false,
         tension: 0,
       },
       {
         label: 'Ceiling Line',
         data: filteredCeilingLineData,
         borderColor: 'rgba(255, 0, 0, 0.8)',
+        backgroundColor: 'rgba(255, 0, 0, 0.4)',
         borderWidth: 2,
         pointRadius: 0,
-        fill: false,
         tension: 0,
       },
       {
         label: 'Ideal Line',
         data: filteredIdealLineData,
         borderColor: 'rgba(128, 128, 128, 0.8)',
+        backgroundColor: 'rgba(128, 128, 128, 0.4)',
         borderWidth: 2,
         borderDash: [3, 3],
         pointRadius: 0,
-        fill: false,
         tension: 0,
       }
     ],
@@ -731,6 +737,9 @@ export default function ChartPage() {
     },
   };
 
+
+
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -738,7 +747,7 @@ export default function ChartPage() {
         
         {entries.length > 0 && (
           <div className="flex items-center space-x-3">
-            <span className="text-sm text-gray-600">View mode:</span>
+            <span className={`text-sm ${onSecondary}`}>View mode:</span>
             <div className="flex items-center">
               <Button
                 onClick={() => setShowDailyAverages(true)}
@@ -771,11 +780,14 @@ export default function ChartPage() {
       </div>
 
       {entries.length > 0 && (
-        <div className={`mb-6 p-4 rounded-lg shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <h2 className={`text-lg font-medium mb-3 ${isDarkMode ? 'text-white' : ''}`}>Date Range Selection</h2>
+        <Card 
+          className={`mb-6 p-4 rounded-lg shadow-sm`}
+          variant='default'
+        >
+          <h2 className={`text-lg font-medium mb-3 ${onSecondary}`}>Date Range Selection</h2>
           <div className="flex flex-col md:flex-row md:items-end gap-4">
             <div className="flex flex-col">
-              <label htmlFor="startDate" className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <label htmlFor="startDate" className={`text-sm font-medium mb-1 ${onSecondary}`}>
                 Start Date
               </label>
               <input 
@@ -784,16 +796,12 @@ export default function ChartPage() {
                 name="startDate"
                 value={dateRange.startDate || ''}
                 onChange={handleDateRangeChange}
-                className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  isDarkMode 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'border-gray-300'
-                }`}
+                className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 ${focusRing} ${onSecondary}`}
               />
             </div>
             
             <div className="flex flex-col">
-              <label htmlFor="endDate" className={`text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <label htmlFor="endDate" className={`text-sm font-medium mb-1 ${onSecondary}`}>
                 End Date
               </label>
               <input 
@@ -802,11 +810,7 @@ export default function ChartPage() {
                 name="endDate"
                 value={dateRange.endDate || ''}
                 onChange={handleDateRangeChange}
-                className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  isDarkMode 
-                    ? 'bg-gray-700 border-gray-600 text-white' 
-                    : 'border-gray-300'
-                }`}
+                className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 ${focusRing} ${onSecondary}`}
               />
             </div>
             
@@ -822,7 +826,7 @@ export default function ChartPage() {
           </div>
           
           <div className="mt-3 flex flex-wrap gap-2">
-            <span className={`text-sm self-center mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Quick select:</span>
+            <span className={`text-sm self-center mr-2 ${onSecondary}`}>Quick select:</span>
             {[7, 30, 90, 180, 365].map(days => (
               <Button 
                 key={days}
@@ -840,17 +844,17 @@ export default function ChartPage() {
           
           {(dateRange.startDate || dateRange.endDate) && (
             <div className="mt-3 text-sm">
-              <span className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+              <span className={`font-medium ${infoText}`}>
                 Filtered data: {' '}
                 {filteredEntries.length} entries
                 {showDailyAverages ? ` (${filteredDailyAverages.length} days)` : ''}
               </span>
               {filteredEntries.length === 0 && (
-                <span className={`ml-2 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>No data in selected range</span>
+                <span className={`ml-2 ${destructiveText}`}>No data in selected range</span>
               )}
             </div>
           )}
-        </div>
+        </Card>
       )}
       
       {entries.length === 0 ? (
@@ -864,7 +868,7 @@ export default function ChartPage() {
           </div>
           
           {showDailyAverages && filteredDailyAverages.length > 0 && (
-            <div className="mt-4 text-sm text-gray-500 text-center">
+            <div className={`mt-4 text-sm ${onSecondary} text-center`}>
               Showing daily averages from {filteredDailyAverages.length} days of data
             </div>
           )}

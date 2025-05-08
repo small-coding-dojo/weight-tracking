@@ -7,6 +7,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { FormInput } from '@/components/ui/FormInput';
 import { Card } from '@/components/ui/Card';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 // Create a component that uses useSearchParams
 function ResetPasswordForm() {
@@ -17,6 +18,8 @@ function ResetPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const primaryText = useThemeColor('Text', 'Primary');
 
   useEffect(() => {
     // Get token from URL query parameter
@@ -76,7 +79,7 @@ function ResetPasswordForm() {
         <Alert variant="error">
           <p>Missing reset token. Please ensure you used the complete link from the email.</p>
           <p className="mt-4">
-            <Link href="/forgot-password" className="text-blue-600 hover:underline">
+            <Link href="/forgot-password" className={`${primaryText} hover:underline`}>
               Request a new password reset
             </Link>
           </p>
@@ -93,7 +96,7 @@ function ResetPasswordForm() {
         <Alert variant="success" icon={true}>
           <p>Your password has been successfully reset.</p>
           <p className="mt-4">
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className={`${primaryText} hover:underline`}>
               Go to login
             </Link>
           </p>
@@ -146,9 +149,10 @@ function ResetPasswordForm() {
 
 // Loading fallback for Suspense
 function LoadingFallback() {
+  const primaryBorder = useThemeColor('Border', 'Primary');
   return (
     <div className="flex justify-center items-center p-8">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+      <div className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}></div>
     </div>
   );
 }

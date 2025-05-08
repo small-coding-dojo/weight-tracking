@@ -1,108 +1,119 @@
+
 'use client';
 
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { Card } from "../ui/Card";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { tokenCategories } from "@/lib/color-utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type ColorCategory = {
-  name: string;
-  description: string;
-  colors: {
-    name: string;
-    lightClassName: string;
-    darkClassName: string;
-    variable: string;
-  }[];
-};
+function ColorHookWrapper({colorName, category, onLoad}:{
+    colorName: string;
+    category?: string;
+    onLoad: (name: string, themeColor: string) => void;
+}) {
+    const identifier = `${colorName}${category}`;
+    const themeColor = useThemeColor(colorName, category);
 
-export function ColorTokens() {
-  const isDarkMode = useDarkMode();
+    // Use a ref to track if we've already loaded this color
+    const hasLoadedRef = useRef(false);
+
+    // Call the onLoad callback after the hook is called
+    useEffect(() => {
+        if(!hasLoadedRef.current) {
+            onLoad(identifier, themeColor);
+            hasLoadedRef.current = true; // Mark as loaded
+        }
+    }, [identifier, themeColor, onLoad]);
+
+    return null; // No UI to render
+}
+
+export function ColorTokens() {  
+  const subtleSecondary = useThemeColor("Subtle", "Secondary");
+  const onSecondary = useThemeColor("On", "Secondary");
+  const backgroundSecondary = useThemeColor("Main", "Secondary");
   
-  const colorCategories: ColorCategory[] = [
-    {
-      name: "Primary",
-      description: "Used for primary actions, key UI elements, and brand colors",
-      colors: [
-        { name: "Primary", lightClassName: "bg-blue-600", darkClassName: "bg-blue-500", variable: "--primary" },
-        { name: "Primary Hover", lightClassName: "bg-blue-700", darkClassName: "bg-blue-600", variable: "--primary-hover" },
-      ],
-    },
-    {
-      name: "Secondary",
-      description: "Used for secondary actions and less prominent UI elements",
-      colors: [
-        { name: "Secondary", lightClassName: "bg-gray-100", darkClassName: "bg-gray-700", variable: "--secondary" },
-        { name: "Secondary Hover", lightClassName: "bg-gray-200", darkClassName: "bg-gray-600", variable: "--secondary-hover" },
-      ],
-    },
-    {
-      name: "Destructive/Danger",
-      description: "Used for destructive actions and error states",
-      colors: [
-        { name: "Destructive", lightClassName: "bg-red-600", darkClassName: "bg-red-600", variable: "--destructive" },
-        { name: "Destructive Hover", lightClassName: "bg-red-700", darkClassName: "bg-red-700", variable: "--destructive-hover" },
-      ],
-    },
-    {
-      name: "Success",
-      description: "Used for success states and confirmations",
-      colors: [
-        { name: "Success", lightClassName: "bg-green-600", darkClassName: "bg-green-600", variable: "--success" },
-        { name: "Success Hover", lightClassName: "bg-green-700", darkClassName: "bg-green-700", variable: "--success-hover" },
-      ],
-    },
-    {
-      name: "Warning",
-      description: "Used for warning states and notifications",
-      colors: [
-        { name: "Warning", lightClassName: "bg-amber-500", darkClassName: "bg-amber-500", variable: "--warning" },
-        { name: "Warning Hover", lightClassName: "bg-amber-600", darkClassName: "bg-amber-600", variable: "--warning-hover" },
-      ],
-    },
-    {
-      name: "Info",
-      description: "Used for informational states and notifications",
-      colors: [
-        { name: "Info", lightClassName: "bg-blue-500", darkClassName: "bg-blue-500", variable: "--info" },
-        { name: "Info Hover", lightClassName: "bg-blue-600", darkClassName: "bg-blue-600", variable: "--info-hover" },
-      ],
-    },
-  ];
+  // Pre-compute all token classes at the component top level
+  const [colorClasses, setColorClasses] = useState<Record<string, string>>({});
+  
+  // Get all color names from all categories first
+  const amountOfColors = useMemo(() => tokenCategories.flatMap(category =>
+    category.colors.map(color => color.name)
+  ), []).length;
+
+
+  // Track loading state
+  const [loadedColors, setLoadedColors] = useState(0);
+  const allColorsLoaded = loadedColors === amountOfColors;
+  
+  // Callback to store the class names
+  const handleColorLoadWithTracking = useCallback((name: string, themeColor: string) => {
+    setColorClasses((prev) => ({ ...prev, [name]: themeColor }));
+    setLoadedColors(prev => prev + 1);
+  }, []);
+
+  const colorWrappers = useMemo(() => (
+    tokenCategories.flatMap(category => (
+        category.colors.map(color => (
+            <ColorHookWrapper
+                key={`${color.name}${category.name}`} 
+                colorName={color.name} 
+                category={category.name}
+                onLoad={handleColorLoadWithTracking}
+            />
+        ))
+    ))
+    ), [handleColorLoadWithTracking]);
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">Color System</h1>
-        <p className={`text-${isDarkMode ? 'gray-400' : 'gray-600'}`}>
-          This reference shows all available colors in the application&apos;s color system.
-          Use these consistent colors throughout the application.
-        </p>
-      </div>
-
-      {colorCategories.map((category) => (
-        <div key={category.name} className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold">{category.name}</h2>
-            <p className={`text-${isDarkMode ? 'gray-400' : 'gray-600'}`}>{category.description}</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {category.colors.map((color) => (
-              <Card key={color.name} className="overflow-hidden">
-                <div className={`h-24 ${isDarkMode ? color.darkClassName : color.lightClassName}`}></div>
-                <div className="p-4">
-                  <h3 className="font-medium">{color.name}</h3>
-                  <p className={`text-sm text-${isDarkMode ? 'gray-400' : 'gray-600'}`}>
-                    CSS Variable: {color.variable}
-                  </p>
-                  <p className={`text-sm text-${isDarkMode ? 'gray-400' : 'gray-600'}`}>
-                    Class: {isDarkMode ? color.darkClassName : color.lightClassName}
-                  </p>
-                </div>
-              </Card>
+    <>
+    {colorWrappers}
+    {allColorsLoaded ? (
+        <div className="grid gap-6">
+            {tokenCategories.map((category, index) => (
+                <Card key={`index-${index}`} variant='custom' withShadow={false} backgroundColor={``}>
+                    <div key={`${category.name},${index}`}>
+                        <h2 className="font-bold text-xl mb-2">{category.name}</h2>
+                        <p className={`${onSecondary} mb-4`}>{category.description}</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {category.colors.map((color, colorIndex) => (
+                                <Card key={colorIndex} className={`p-4`} variant='custom' backgroundColor={subtleSecondary}>
+                                    <div className={`h-16 rounded-md mb-2 ${colorClasses[`${color.name}${category.name}`]} border-2`}>
+                                        {color.lightClassName.includes("text") ? "Lorem ipsum dolor sit amet..." : "" }
+                                    </div>
+                                    <div className="space-y-1">
+                                        <h3 className={`font-medium ${onSecondary}`}>{color.name}</h3>
+                                        {color.variable && (
+                                            <code className={`text-sm ${backgroundSecondary} ${onSecondary} px-1 py-0.5 rounded`}>
+                                            {color.variable}
+                                            </code>
+                                        )}
+                                        {color.description && (
+                                            <p className={`text-sm ${subtleSecondary} ${onSecondary}`}>
+                                            {color.description}
+                                            </p>
+                                        )}
+                                        <div className={`text-xs mt-2 ${backgroundSecondary} ${onSecondary}`}>
+                                            <div>
+                                            Light: <code>{color.lightClassName}</code>
+                                            </div>
+                                            <div>
+                                            Dark: <code>{color.darkClassName}</code>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                </Card>
             ))}
-          </div>
         </div>
-      ))}
-    </div>
+    ) : (
+        <div className="text-center py-8">
+            Loading color tokens... ({loadedColors}/{amountOfColors})
+        </div>
+    )}
+    </>
   );
 }

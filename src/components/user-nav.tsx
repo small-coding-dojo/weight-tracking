@@ -6,12 +6,24 @@ import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/Button';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export function UserNav() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const destructiveText = useThemeColor("Text", "Destructive");
+  const destructiveTextHover = useThemeColor("Text Hover", "Destructive");
+
+  const mainSecondary = useThemeColor("Main", "Secondary");
+  const hoverSecondary = useThemeColor("Hover", "Secondary");
+  const onSecondary = useThemeColor("On", "Secondary");
+  const borderSecondary = useThemeColor("Border", "Secondary");
+
+  const onPrimary = useThemeColor("On", "Primary");
+  const borderOnPrimary = useThemeColor("Border On", "Primary");
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -45,7 +57,7 @@ export function UserNav() {
           variant="ghost"
           size="sm"
           asChild
-          className="text-white"
+          className={onPrimary}
         >
           <Link href="/login">
             Log in
@@ -55,7 +67,7 @@ export function UserNav() {
           variant="ghost"
           size="sm"
           asChild
-          className="text-white border border-gray-300"
+          className={`${onPrimary} border ${borderOnPrimary}`}
         >
           <Link href="/register">
             Register
@@ -94,24 +106,24 @@ export function UserNav() {
       </Button>
       
       {isMenuOpen && (
-        <div className="absolute right-0 mt-1 bg-white rounded-md shadow-lg py-1 w-48 z-10 top-full">
-          <div className="px-3 py-2 text-sm text-gray-500 border-b border-gray-100">
+        <div className={`absolute right-0 mt-1 ${mainSecondary} rounded-md shadow-lg py-1 w-48 z-10 top-full`}>
+          <div className={`px-3 py-2 text-sm ${onSecondary} border-b ${borderSecondary}`}>
             Signed in as <span className="font-medium text-gray-900">{session.user?.email}</span>
           </div>
           <Link
             href="/settings"
-            className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className={`block w-full text-left px-3 py-2 text-sm ${onSecondary} ${hoverSecondary}`}
             onClick={() => setIsMenuOpen(false)}
           >
             Settings
           </Link>
-          <Button
+          <Link
             onClick={handleSignOut}
-            variant="ghost"
-            className="w-full text-left justify-start px-3 py-2 text-sm text-red-600 hover:bg-red-50"
+            className={`block w-full text-left justify-start px-3 py-2 text-sm ${destructiveText} ${hoverSecondary} ${destructiveTextHover}` }
+            href="/login"
           >
             Sign out
-          </Button>
+          </Link>
         </div>
       )}
     </div>

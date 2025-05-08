@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function ImportPage() {
   const { data: session, status } = useSession();
@@ -19,6 +20,7 @@ export default function ImportPage() {
     errors?: string[];
     error?: string;
   } | null>(null);
+  const primaryBorder = useThemeColor('Border', 'Primary');
 
   // Redirect to login page if not authenticated
   if (status === 'unauthenticated') {
@@ -29,7 +31,7 @@ export default function ImportPage() {
   if (status === 'loading') {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        <div className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}></div>
       </div>
     );
   }

@@ -2,15 +2,39 @@
 
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
 import { Slot } from '@radix-ui/react-slot';
-import { useDarkMode } from '@/hooks/useDarkMode';
+import { useThemeColor } from '@/hooks/useThemeColor';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'accent' | 'danger' | 'success' | 'outline' | 'ghost';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'outline' | 'ghost';
+  variant?: ButtonVariant;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'icon';
   isLoading?: boolean;
   fullWidth?: boolean;
   asChild?: boolean;
   children?: ReactNode;
+}
+
+function GetVariantStyles(variant: ButtonVariant, disabled?: boolean, isLoading?: boolean) {
+  const disabledStyle = disabled || isLoading ? 'opacity-50 cursor-not-allowed' : '';
+
+  const primaryStyles = `${useThemeColor("Main", "Primary")} ${useThemeColor("Hover", "Primary")} ${useThemeColor("On", "Primary")} ${disabledStyle}`;
+  const secondaryStyles = `${useThemeColor("Main", "Secondary")} ${useThemeColor("Hover", "Secondary")} ${useThemeColor("On", "Secondary")} ${disabledStyle}`
+  const accentStyles = `${useThemeColor("Text", "Primary")} ${useThemeColor("Text Hover", "Primary")}`;
+  const dangerStyles = `${useThemeColor("Main", "Destructive")} ${useThemeColor("Hover", "Destructive")} ${useThemeColor("On Destructive", "Destructive")} ${disabledStyle}`;
+  const successStyles = `${useThemeColor("Main", "Success")} ${useThemeColor("Hover", "Success")} ${useThemeColor("On", "Success")} ${disabledStyle}`;
+  const outlineStyles = `bg-transparent border ${useThemeColor("Outline Border", "Button")} ${useThemeColor("Outline Text", "Button")} ${useThemeColor("Outline Hover", "Button")} ${disabledStyle}`;
+  const ghostStyles = `bg-transparent ${useThemeColor("Ghost Text", "Button")} ${useThemeColor("Ghost Hover", "Button")} ${useThemeColor("Ghost Hover Text", "Button")} ${disabledStyle}`;
+
+  return {
+    primary: primaryStyles,
+    secondary: secondaryStyles,
+    accent: accentStyles,
+    danger: dangerStyles,
+    success: successStyles,
+    outline: outlineStyles,
+    ghost: ghostStyles,
+  }[variant];
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -25,10 +49,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     disabled,
     ...props 
   }, ref) => {
-    const isDarkMode = useDarkMode();
     const Comp = asChild ? Slot : "button";
     
-    const baseStyles = 'inline-flex items-center justify-center font-medium transition-colors rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500';
+    const baseStyles = `inline-flex items-center justify-center font-medium transition-colors rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:${useThemeColor("Focus Ring", "Assets")}`;
     
     const sizeStyles = {
       xs: 'px-2 py-0.5 text-xs',
@@ -36,36 +59,16 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       md: 'px-4 py-2',
       lg: 'px-6 py-3 text-lg',
       icon: 'p-2 aspect-square',
-    };
-    const disabledStyle = disabled || isLoading ? 'opacity-50 cursor-not-allowed' : '';
-    const getLightVariantStyles = () => ({
-      primary: `bg-blue-600 hover:bg-blue-700 text-white ${disabledStyle}`,
-      secondary: `bg-gray-100 text-gray-700 hover:bg-gray-200`,
-      danger: `bg-red-600 hover:bg-red-700 text-white ${disabledStyle}`,
-      success: `bg-green-600 hover:bg-green-700 text-white ${disabledStyle}`,
-      outline: `border border-gray-300 text-gray-700 hover:bg-gray-50`,
-      ghost: `text-gray-700 hover:bg-gray-100 hover:text-gray-800`,
-    });
-
-    const getDarkVariantStyles = () => ({
-      primary: `bg-blue-600 hover:bg-blue-700 text-white ${disabledStyle}`,
-      secondary: `bg-gray-700 text-gray-300 hover:bg-gray-600`,
-      danger: `bg-red-600 hover:bg-red-700 text-white ${disabledStyle}`,
-      success: `bg-green-600 hover:bg-green-700 text-white ${disabledStyle}`,
-      outline: `border border-gray-600 text-gray-300 hover:bg-gray-700`,
-      ghost: `text-gray-300 hover:bg-gray-800 hover:text-gray-100`,
-    });
-
+    };    
     
-    
-    const variantStyles = isDarkMode ? getDarkVariantStyles() : getLightVariantStyles();
+    const variantStyle = GetVariantStyles(variant, disabled, isLoading);
     const widthStyle = fullWidth ? 'w-full' : '';
     
     return (
       <Comp
         ref={ref}
         disabled={disabled || isLoading}
-        className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${widthStyle} ${className}`}
+        className={`${baseStyles} ${sizeStyles[size]} ${variantStyle} ${widthStyle} ${className}`}
         {...props}
       >
         {isLoading ? (

@@ -1,7 +1,7 @@
 'use client';
 
 import { InputHTMLAttributes, forwardRef } from 'react';
-import { useDarkMode } from '@/hooks/useDarkMode';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -11,24 +11,30 @@ export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ({ label, description, error, className, ...props }, ref) => {
-    const isDarkMode = useDarkMode();
-    
+    const onSecondary = useThemeColor("On", "Secondary");
+    const backgroundSecondary = useThemeColor("Main", "Secondary");
+    const borderHover = useThemeColor("Border Hover", "Assets");
+    const focusRing = useThemeColor("Focus Ring", "Assets");
+    const destructiveBorder = useThemeColor("Border", "Destructive");
+    const infoText = useThemeColor("Text", "Info");
+    const destructiveText = useThemeColor("Text", "Destructive");
+
     const getLabelClass = () => {
-      return `block text-sm font-medium mb-1 ${isDarkMode ? 'text-gray-200' : ''}`;
+      return `block text-sm font-medium mb-1 ${onSecondary}`;
     };
     
     const getInputClass = () => {
-      return `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 
-        ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'border-gray-300'} 
-        ${error ? 'border-red-500' : ''} ${className || ''}`;
+      return `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:${focusRing} 
+      ${backgroundSecondary} ${borderHover} ${onSecondary}
+        ${error ? destructiveBorder : ''} ${className || ''}`;
     };
     
     const getDescriptionClass = () => {
-      return `text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`;
+      return `text-xs mt-1 ${infoText}`;
     };
     
     const getErrorClass = () => {
-      return `text-xs mt-1 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`;
+      return `text-xs mt-1 ${destructiveText}`;
     };
     
     return (

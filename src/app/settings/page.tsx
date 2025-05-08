@@ -6,6 +6,7 @@ import { FormInput } from '@/components/ui/FormInput';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
+import Link from 'next/link';
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -22,7 +23,10 @@ export default function SettingsPage() {
     const fetchSettings = async () => {
       try {
         const session = await getSession();
-        if (!session) return;
+        // Don't render content if not authenticated
+        if (!session) {
+          return null;
+        }
 
         const response = await fetch('/api/settings');
         if (response.ok) {
@@ -153,7 +157,6 @@ export default function SettingsPage() {
             onChange={handleChange}
             placeholder="Enter buffer value"
             description="Buffer value for your weight loss calculations"
-            className="mb-6"
           />
 
           <Button
@@ -177,15 +180,17 @@ export default function SettingsPage() {
             <p className="text-sm mb-3">
               Import historic data from Excel spreadsheets with structured measurement data.
             </p>
-            <a 
-              href="/import" 
-              className="inline-flex items-center text-blue-600 hover:text-blue-800"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-              </svg>
-              Import from Excel
-            </a>
+            <Link href="/import">
+              <Button
+                variant="primary"
+                className='inline-flex items-center'
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                </svg>
+                Import from Excel
+              </Button>
+            </Link>
           </div>
 
           {/* Room for future data management options */}

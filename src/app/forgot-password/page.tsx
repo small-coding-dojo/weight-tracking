@@ -6,12 +6,14 @@ import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/Button';
 import { FormInput } from '@/components/ui/FormInput';
 import { Card } from '@/components/ui/Card';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const primaryText = useThemeColor('Text', 'Primary');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -47,7 +49,7 @@ export default function ForgotPasswordPage() {
         <Alert variant="success" icon={true}>
           <p>If an account exists with that email, you will receive password reset instructions.</p>
           <p className="mt-4">
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className={`${primaryText} hover:underline`}>
               Return to login
             </Link>
           </p>
@@ -83,7 +85,7 @@ export default function ForgotPasswordPage() {
           </Card>
           
           <div className="mt-4 text-center">
-            <Link href="/login" className="text-blue-600 hover:underline">
+            <Link href="/login" className={`${primaryText} hover:underline`}>
               Back to Login
             </Link>
           </div>
