@@ -10,8 +10,8 @@ const transporter = nodemailer.createTransport({
   secure: process.env.EMAIL_SERVER_SECURE === "true",
   auth: {
     user: process.env.EMAIL_SERVER_USER || "user@example.com",
-    pass: process.env.EMAIL_SERVER_PASSWORD || "password"
-  }
+    pass: process.env.EMAIL_SERVER_PASSWORD || "password",
+  },
 });
 
 export async function POST(request: NextRequest) {
@@ -19,22 +19,19 @@ export async function POST(request: NextRequest) {
     const { email } = await request.json();
 
     if (!email) {
-      return NextResponse.json(
-        { error: "Email is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     // Find the user with the provided email
     const user = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
     // Don't reveal if email exists for security reasons
     if (!user) {
       return NextResponse.json(
-        { message: "If the email exists, a reset link will be sent" }, 
-        { status: 200 }
+        { message: "If the email exists, a reset link will be sent" },
+        { status: 200 },
       );
     }
 
@@ -47,13 +44,13 @@ export async function POST(request: NextRequest) {
       where: { id: user.id },
       data: {
         resetToken,
-        resetTokenExpiry
-      }
+        resetTokenExpiry,
+      },
     });
 
     // Send reset email
     const resetUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/reset-password?token=${resetToken}`;
-    
+
     try {
       await transporter.sendMail({
         from: process.env.EMAIL_FROM || "noreply@example.com",
@@ -64,7 +61,7 @@ export async function POST(request: NextRequest) {
           <p>Click the link below to reset your password:</p>
           <p><a href="${resetUrl}">Reset Password</a></p>
           <p>This link will expire in 1 hour.</p>
-        `
+        `,
       });
     } catch (error) {
       console.error("Error sending email:", error);
@@ -72,14 +69,14 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { message: "If the email exists, a reset link will be sent" }, 
-      { status: 200 }
+      { message: "If the email exists, a reset link will be sent" },
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error handling password reset request:", error);
     return NextResponse.json(
       { error: "Failed to process reset request" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

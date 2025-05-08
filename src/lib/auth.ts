@@ -20,7 +20,10 @@ export const authOptions: NextAuthOptions = {
           where: { username: credentials.username },
         });
 
-        if (!user || !(await compare(credentials.password, user.passwordHash))) {
+        if (
+          !user ||
+          !(await compare(credentials.password, user.passwordHash))
+        ) {
           return null;
         }
 
@@ -57,4 +60,4 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET || "your-secret-key",
-}
+};

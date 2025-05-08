@@ -83,7 +83,11 @@ export default function DesignSystemPage() {
         </div>
         {/* new example */}
 
-        <Card className="p-4 rounded-md" variant="custom" backgroundColor={subtleSecondary}>
+        <Card
+          className="p-4 rounded-md"
+          variant="custom"
+          backgroundColor={subtleSecondary}
+        >
           <h3 className="text-lg font-semibold mb-2">Implementation</h3>
           <p className={`${onSecondary} mb-2`}>
             Use the useThemeColor hook to apply themed styles:

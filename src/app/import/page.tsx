@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState, FormEvent } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Alert } from '@/components/ui/Alert';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useState, FormEvent } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Alert } from "@/components/ui/Alert";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ImportPage() {
   const { data: session, status } = useSession();
@@ -20,18 +20,20 @@ export default function ImportPage() {
     errors?: string[];
     error?: string;
   } | null>(null);
-  const primaryBorder = useThemeColor('Border', 'Primary');
+  const primaryBorder = useThemeColor("Border", "Primary");
 
   // Redirect to login page if not authenticated
-  if (status === 'unauthenticated') {
-    router.push('/login');
+  if (status === "unauthenticated") {
+    router.push("/login");
     return null;
   }
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}></div>
+        <div
+          className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}
+        ></div>
       </div>
     );
   }
@@ -56,18 +58,18 @@ export default function ImportPage() {
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
 
-      const response = await fetch('/api/import', {
-        method: 'POST',
+      const response = await fetch("/api/import", {
+        method: "POST",
         body: formData,
       });
 
       const data = await response.json();
       setResult(data);
     } catch (error) {
-      console.error('Upload error:', error);
-      setResult({ error: 'An error occurred during upload' });
+      console.error("Upload error:", error);
+      setResult({ error: "An error occurred during upload" });
     } finally {
       setIsLoading(false);
     }
@@ -81,11 +83,22 @@ export default function ImportPage() {
         <div className="mb-6">
           <h2 className="text-lg font-medium mb-2">Instructions</h2>
           <ul className="list-disc pl-6 space-y-1">
-            <li>Prepare an Excel file with columns for date and measurements</li>
-            <li>Required column names: &quot;date, measurement 1, measurement 2, measurement 3&quot;</li>
-            <li>Measurement 1 will be assigned 8:00 AM on the specified date</li>
-            <li>Measurement 2 will be assigned 12:00 PM on the specified date</li>
-            <li>Measurement 3 will be assigned 8:00 PM on the specified date</li>
+            <li>
+              Prepare an Excel file with columns for date and measurements
+            </li>
+            <li>
+              Required column names: &quot;date, measurement 1, measurement 2,
+              measurement 3&quot;
+            </li>
+            <li>
+              Measurement 1 will be assigned 8:00 AM on the specified date
+            </li>
+            <li>
+              Measurement 2 will be assigned 12:00 PM on the specified date
+            </li>
+            <li>
+              Measurement 3 will be assigned 8:00 PM on the specified date
+            </li>
             <li>Empty measurement cells will be skipped</li>
           </ul>
         </div>
@@ -120,7 +133,9 @@ export default function ImportPage() {
           <div className="mt-6">
             {result.success ? (
               <Alert variant="success" title="Import Successful!">
-                <p className="mt-1">Successfully imported {result.imported} measurements.</p>
+                <p className="mt-1">
+                  Successfully imported {result.imported} measurements.
+                </p>
                 {result.errors && result.errors.length > 0 && (
                   <div className="mt-2">
                     <h4 className="font-medium text-amber-700">Warnings:</h4>
@@ -132,15 +147,15 @@ export default function ImportPage() {
                   </div>
                 )}
                 <div className="mt-4">
-                  <Link 
-                    href="/table" 
+                  <Link
+                    href="/table"
                     className="text-blue-600 hover:text-blue-800 hover:underline"
                   >
                     View data in table
                   </Link>
-                  {' | '}
-                  <Link 
-                    href="/chart" 
+                  {" | "}
+                  <Link
+                    href="/chart"
                     className="text-blue-600 hover:text-blue-800 hover:underline"
                   >
                     View data in chart

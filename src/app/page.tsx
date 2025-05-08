@@ -1,38 +1,40 @@
-'use client';
+"use client";
 
-import { useState, FormEvent, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { Alert } from '@/components/ui/Alert';
-import { FormInput } from '@/components/ui/FormInput';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useState, FormEvent, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Alert } from "@/components/ui/Alert";
+import { FormInput } from "@/components/ui/FormInput";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [value, setValue] = useState('');
-  const [notes, setNotes] = useState('');
+  const [value, setValue] = useState("");
+  const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const primaryBorder = useThemeColor('Border', 'Primary');
-  const onSecondary = useThemeColor('On', 'Secondary');
+  const primaryBorder = useThemeColor("Border", "Primary");
+  const onSecondary = useThemeColor("On", "Secondary");
 
   // Redirect to login page if not authenticated
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    if (status === "unauthenticated") {
+      router.push("/login");
     }
   }, [status, router]);
 
   // Display loading state while checking authentication
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="flex justify-center items-center p-8">
-        <div className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}></div>
+        <div
+          className={`animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 ${primaryBorder}`}
+        ></div>
       </div>
     );
   }
@@ -52,29 +54,29 @@ export default function Home() {
       // Validate input
       const numberValue = parseFloat(value);
       if (isNaN(numberValue)) {
-        throw new Error('Please enter a valid number');
+        throw new Error("Please enter a valid number");
       }
 
       // Submit to API
-      const response = await fetch('/api/entries', {
-        method: 'POST',
+      const response = await fetch("/api/entries", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ value: numberValue, notes }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to save entry');
+        throw new Error(data.error || "Failed to save entry");
       }
 
       // Success!
-      setValue('');
-      setNotes('');
-      setSuccess('Entry saved successfully!');
+      setValue("");
+      setNotes("");
+      setSuccess("Entry saved successfully!");
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'An error occurred');
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -83,20 +85,20 @@ export default function Home() {
   return (
     <div>
       <h1 className={`text-2xl font-bold mb-6 ${onSecondary}`}>Data Entry</h1>
-      
+
       {error && (
         <Alert variant="error" className="mb-4">
           {error}
         </Alert>
       )}
-      
+
       {success && (
         <Alert variant="success" className="mb-4">
           {success}
         </Alert>
       )}
-      
-       <Card>
+
+      <Card>
         <form onSubmit={handleSubmit} className="space-y-4">
           <FormInput
             type="number"

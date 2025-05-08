@@ -3,6 +3,7 @@
 A mobile-optimized web application for tracking and visualizing weight data with secure user authentication.
 
 ## Table of Contents
+
 - [About](#about)
   - [Who Is This For?](#who-is-this-for)
 - [Features](#features)
@@ -30,6 +31,7 @@ ScaleTrack is designed for individuals who want to monitor their weight changes 
 ### Who is this for?
 
 ScaleTrack is designed for:
+
 - **Health-conscious individuals** tracking their weight as part of a fitness journey
 - **People with specific health goals** who need to monitor weight fluctuations
 - **Fitness coaches** who want a simple tool to track client progress
@@ -89,6 +91,7 @@ Currently, deployment requires basic knowledge of Docker and Docker Compose as t
 ### Docker Deployment
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/BadWinniePooh/weight-tracking.git
    cd weight-tracking
@@ -99,6 +102,7 @@ Currently, deployment requires basic knowledge of Docker and Docker Compose as t
 3. Adjust the [docker compose yaml](./compose.yaml) to your needs (add labels for traefik, etc.)
 
 4. Build and run the container:
+
    ```bash
    docker-compose up -d --build
    ```
@@ -146,7 +150,7 @@ TIMEZONE="Europe/Berlin"
 - **DATABASE_URL**: Connection string for your database ([Prisma](https://prisma.io) by default)
 - **NEXTAUTH_SECRET**: A random string used to encrypt cookies and tokens (use a secure random generator)
 - **NEXTAUTH_URL**: The base URL of your deployed application
-- **EMAIL_SERVER_***: SMTP settings for sending password reset emails
+- **EMAIL\_SERVER\_***: SMTP settings for sending password reset emails
 - **EMAIL_FROM**: The "from" address for outgoing emails
 - **EMAIL_SERVER_SECURE**: TLS setting for connection security (check with your provider whether TLS (true) is used)
 - **TIMEZONE**: Default timezone for date calculations and display
@@ -156,17 +160,20 @@ TIMEZONE="Europe/Berlin"
 ### Local Development Setup
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/BadWinniePooh/weight-tracking.git
    cd weight-tracking
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Create a `.env.local` file based on the example above, using:
+
    ```
    DATABASE_URL="file:./prisma/dev.db?connection_limit=1"
    NEXTAUTH_SECRET=any-random-string-for-development
@@ -174,11 +181,13 @@ TIMEZONE="Europe/Berlin"
    ```
 
 4. Set up the database:
+
    ```bash
    npx prisma migrate dev
    ```
 
 5. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -188,11 +197,13 @@ TIMEZONE="Europe/Berlin"
 ### Database Management
 
 - View your database with Prisma Studio:
+
   ```bash
   npx prisma studio
   ```
 
 - Create a migration after schema changes:
+
   ```bash
   npx prisma migrate dev --name your_migration_name
   ```
@@ -214,10 +225,10 @@ ScaleTrack allows you to import weight data from Excel files:
 
 #### Example Table for reference
 
-| date | measurement 1 | measurement 2 | measurement 3 |
-| --- | --- | --- | --- |
-| 11.08.2024 | 102.4 | | 104.4 |
-| 12.08.2024 | ... | ... | ... |
+| date       | measurement 1 | measurement 2 | measurement 3 |
+| ---------- | ------------- | ------------- | ------------- |
+| 11.08.2024 | 102.4         |               | 104.4         |
+| 12.08.2024 | ...           | ...           | ...           |
 
 ### Exporting Data
 

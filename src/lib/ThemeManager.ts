@@ -33,7 +33,7 @@ class ThemeManager {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(listener => listener(this._isDarkMode));
+    this.listeners.forEach((listener) => listener(this._isDarkMode));
   }
 }
 

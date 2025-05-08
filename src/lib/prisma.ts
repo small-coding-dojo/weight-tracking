@@ -1,4 +1,4 @@
-import { PrismaClient } from '../generated/prisma';
+import { PrismaClient } from "../generated/prisma";
 
 // Declare a global variable for the PrismaClient
 declare global {
@@ -11,6 +11,6 @@ const prismaClientOptions = {};
 export const prisma = global.prisma || new PrismaClient(prismaClientOptions);
 
 // Store the client instance in the global variable in development mode
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }

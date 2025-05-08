@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useTheme } from '@/components/theme-provider';
-import { Button } from '@/components/ui/Button';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from "@/components/theme-provider";
+import { Button } from "@/components/ui/Button";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const onPrimary = useThemeColor('On', 'Primary');
+  const onPrimary = useThemeColor("On", "Primary");
 
   return (
     <div className="relative inline-block">
@@ -15,11 +15,13 @@ export function ThemeToggle() {
         size="icon"
         className={onPrimary}
         onClick={() => {
-          setTheme(theme === 'dark' ? 'light' : theme === 'light' ? 'system' : 'dark');
+          setTheme(
+            theme === "dark" ? "light" : theme === "light" ? "system" : "dark",
+          );
         }}
         aria-label="Toggle theme"
       >
-        {theme === 'dark' && (
+        {theme === "dark" && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -35,7 +37,7 @@ export function ThemeToggle() {
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
           </svg>
         )}
-        {theme === 'light' && (
+        {theme === "light" && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -59,7 +61,7 @@ export function ThemeToggle() {
             <path d="M19.07 4.93l-1.41 1.41"></path>
           </svg>
         )}
-        {theme === 'system' && (
+        {theme === "system" && (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"

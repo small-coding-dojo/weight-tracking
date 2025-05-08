@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { InputHTMLAttributes, forwardRef } from 'react';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { InputHTMLAttributes, forwardRef } from "react";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -22,50 +22,37 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     const getLabelClass = () => {
       return `block text-sm font-medium mb-1 ${onSecondary}`;
     };
-    
+
     const getInputClass = () => {
       return `w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:${focusRing} 
       ${backgroundSecondary} ${borderHover} ${onSecondary}
-        ${error ? destructiveBorder : ''} ${className || ''}`;
+        ${error ? destructiveBorder : ""} ${className || ""}`;
     };
-    
+
     const getDescriptionClass = () => {
       return `text-xs mt-1 ${infoText}`;
     };
-    
+
     const getErrorClass = () => {
       return `text-xs mt-1 ${destructiveText}`;
     };
-    
+
     return (
       <div className="mb-4">
-        <label 
-          htmlFor={props.id} 
-          className={getLabelClass()}
-        >
+        <label htmlFor={props.id} className={getLabelClass()}>
           {label}
         </label>
-        
-        <input
-          ref={ref}
-          {...props}
-          className={getInputClass()}
-        />
-        
+
+        <input ref={ref} {...props} className={getInputClass()} />
+
         {description && !error && (
-          <p className={getDescriptionClass()}>
-            {description}
-          </p>
+          <p className={getDescriptionClass()}>{description}</p>
         )}
-        
-        {error && (
-          <p className={getErrorClass()}>
-            {error}
-          </p>
-        )}
+
+        {error && <p className={getErrorClass()}>{error}</p>}
       </div>
     );
-  }
+  },
 );
 
-FormInput.displayName = 'FormInput';
+FormInput.displayName = "FormInput";

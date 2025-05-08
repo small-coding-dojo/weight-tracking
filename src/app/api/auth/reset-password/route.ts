@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!token || !password) {
       return NextResponse.json(
         { error: "Token and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -18,15 +18,15 @@ export async function POST(request: NextRequest) {
       where: {
         resetToken: token,
         resetTokenExpiry: {
-          gt: new Date()
-        }
-      }
+          gt: new Date(),
+        },
+      },
     });
 
     if (!user) {
       return NextResponse.json(
         { error: "Invalid or expired reset token" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,19 +39,19 @@ export async function POST(request: NextRequest) {
       data: {
         passwordHash,
         resetToken: null,
-        resetTokenExpiry: null
-      }
+        resetTokenExpiry: null,
+      },
     });
 
     return NextResponse.json(
       { message: "Password successfully reset" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error resetting password:", error);
     return NextResponse.json(
       { error: "Failed to reset password" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

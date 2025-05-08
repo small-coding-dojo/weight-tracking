@@ -10,21 +10,21 @@ export async function POST(request: NextRequest) {
     if (!username || !email || !password) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Check if username or email already exists
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ username }, { email }]
-      }
+        OR: [{ username }, { email }],
+      },
     });
 
     if (existingUser) {
       return NextResponse.json(
         { error: "Username or email already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -36,14 +36,14 @@ export async function POST(request: NextRequest) {
       data: {
         username,
         email,
-        passwordHash
+        passwordHash,
       },
       select: {
         id: true,
         username: true,
         email: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     });
 
     return NextResponse.json(user, { status: 201 });
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     console.error("Error during user registration:", error);
     return NextResponse.json(
       { error: "Failed to register user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

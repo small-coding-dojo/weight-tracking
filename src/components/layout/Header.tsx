@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { UserNav } from "@/components/user-nav";
 import { MainNav } from "@/components/main-nav";

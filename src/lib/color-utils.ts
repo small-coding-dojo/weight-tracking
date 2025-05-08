@@ -441,12 +441,15 @@ export const tokenCategories: ColorCategory[] = [
 /**
  * Get a flattened map of all color tokens for easy lookup by name
  */
-export const colorTokenMap = tokenCategories.reduce((acc, category) => {
-  category.colors.forEach((color) => {
-    acc[color.name.toLowerCase().replace(/\s+/g, "-")] = color;
-  });
-  return acc;
-}, {} as Record<string, ColorToken>);
+export const colorTokenMap = tokenCategories.reduce(
+  (acc, category) => {
+    category.colors.forEach((color) => {
+      acc[color.name.toLowerCase().replace(/\s+/g, "-")] = color;
+    });
+    return acc;
+  },
+  {} as Record<string, ColorToken>,
+);
 
 /**
  * Find a color token by name and optional category
@@ -457,7 +460,7 @@ export const colorTokenMap = tokenCategories.reduce((acc, category) => {
  */
 export function findColorToken(
   colorName: string,
-  categoryName?: string
+  categoryName?: string,
 ): ColorToken | undefined {
   // Convert the color name to a lookup key format (lowercase with hyphens)
   const normalizedName = colorName.toLowerCase().replace(/\s+/g, "-");
@@ -465,14 +468,14 @@ export function findColorToken(
   // If a category is specified, search only within that category
   if (categoryName) {
     const categoryObj = tokenCategories.find(
-      (cat) => cat.name.toLowerCase() === categoryName.toLowerCase()
+      (cat) => cat.name.toLowerCase() === categoryName.toLowerCase(),
     );
 
     if (categoryObj) {
       return categoryObj.colors.find(
         (color) =>
           color.name.toLowerCase() === colorName.toLowerCase() ||
-          color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName
+          color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName,
       );
     }
     return undefined;
@@ -483,7 +486,7 @@ export function findColorToken(
     const found = cat.colors.find(
       (color) =>
         color.name.toLowerCase() === colorName.toLowerCase() ||
-        color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName
+        color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName,
     );
     if (found) return found;
   }

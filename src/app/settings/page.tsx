@@ -1,23 +1,23 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { getSession } from 'next-auth/react';
-import { FormInput } from '@/components/ui/FormInput';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Alert } from '@/components/ui/Alert';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { getSession } from "next-auth/react";
+import { FormInput } from "@/components/ui/FormInput";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Alert } from "@/components/ui/Alert";
+import Link from "next/link";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
-    weightGoal: '',
-    lossRate: '0.0055',
-    carbFatRatio: '0.6',
-    bufferValue: '0.0075'
+    weightGoal: "",
+    lossRate: "0.0055",
+    carbFatRatio: "0.6",
+    bufferValue: "0.0075",
   });
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -28,20 +28,20 @@ export default function SettingsPage() {
           return null;
         }
 
-        const response = await fetch('/api/settings');
+        const response = await fetch("/api/settings");
         if (response.ok) {
           const data = await response.json();
           if (data.settings) {
             setSettings({
-              weightGoal: data.settings.weightGoal?.toString() || '',
-              lossRate: data.settings.lossRate?.toString() || '0.0055',
-              carbFatRatio: data.settings.carbFatRatio?.toString() || '0.6',
-              bufferValue: data.settings.bufferValue?.toString() || '0.0075'
+              weightGoal: data.settings.weightGoal?.toString() || "",
+              lossRate: data.settings.lossRate?.toString() || "0.0055",
+              carbFatRatio: data.settings.carbFatRatio?.toString() || "0.6",
+              bufferValue: data.settings.bufferValue?.toString() || "0.0075",
             });
           }
         }
       } catch (error) {
-        console.error('Error fetching settings:', error);
+        console.error("Error fetching settings:", error);
       } finally {
         setLoading(false);
       }
@@ -52,7 +52,7 @@ export default function SettingsPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSettings(prev => ({ ...prev, [name]: value }));
+    setSettings((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,38 +60,44 @@ export default function SettingsPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/settings', {
-        method: 'POST',
+      const response = await fetch("/api/settings", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          weightGoal: settings.weightGoal ? parseFloat(settings.weightGoal) : null,
+          weightGoal: settings.weightGoal
+            ? parseFloat(settings.weightGoal)
+            : null,
           lossRate: settings.lossRate ? parseFloat(settings.lossRate) : null,
-          carbFatRatio: settings.carbFatRatio ? parseFloat(settings.carbFatRatio) : null,
-          bufferValue: settings.bufferValue ? parseFloat(settings.bufferValue) : null,
+          carbFatRatio: settings.carbFatRatio
+            ? parseFloat(settings.carbFatRatio)
+            : null,
+          bufferValue: settings.bufferValue
+            ? parseFloat(settings.bufferValue)
+            : null,
         }),
       });
 
       if (response.ok) {
-        setMessage('Settings saved successfully!');
-        setMessageType('success');
+        setMessage("Settings saved successfully!");
+        setMessageType("success");
       } else {
         const error = await response.json();
-        setMessage(error.message || 'Failed to save settings');
-        setMessageType('error');
+        setMessage(error.message || "Failed to save settings");
+        setMessageType("error");
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
-      setMessage('An error occurred while saving settings');
-      setMessageType('error');
+      console.error("Error saving settings:", error);
+      setMessage("An error occurred while saving settings");
+      setMessageType("error");
     } finally {
       setLoading(false);
-      
+
       // Clear message after 3 seconds
       setTimeout(() => {
-        setMessage('');
-        setMessageType('');
+        setMessage("");
+        setMessageType("");
       }, 3000);
     }
   };
@@ -99,16 +105,16 @@ export default function SettingsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">User Settings</h1>
-      
+
       {message && (
-        <Alert 
-          variant={messageType === 'success' ? 'success' : 'error'} 
+        <Alert
+          variant={messageType === "success" ? "success" : "error"}
           className="mb-6"
         >
           {message}
         </Alert>
       )}
-      
+
       <Card className="mb-6">
         <form onSubmit={handleSubmit}>
           <FormInput
@@ -173,20 +179,29 @@ export default function SettingsPage() {
       {/* Data Management Section */}
       <Card>
         <h2 className="text-xl font-semibold mb-4">Data Management</h2>
-        
+
         <div className="space-y-4">
           <div className="border-b pb-4">
             <h3 className="font-medium mb-2">Import Data</h3>
             <p className="text-sm mb-3">
-              Import historic data from Excel spreadsheets with structured measurement data.
+              Import historic data from Excel spreadsheets with structured
+              measurement data.
             </p>
             <Link href="/import">
-              <Button
-                variant="primary"
-                className='inline-flex items-center'
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+              <Button variant="primary" className="inline-flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
                 </svg>
                 Import from Excel
               </Button>

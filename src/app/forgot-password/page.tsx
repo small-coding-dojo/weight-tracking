@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useState, FormEvent } from 'react';
-import Link from 'next/link';
-import { Alert } from '@/components/ui/Alert';
-import { Button } from '@/components/ui/Button';
-import { FormInput } from '@/components/ui/FormInput';
-import { Card } from '@/components/ui/Card';
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useState, FormEvent } from "react";
+import Link from "next/link";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { FormInput } from "@/components/ui/FormInput";
+import { Card } from "@/components/ui/Card";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const primaryText = useThemeColor('Text', 'Primary');
+  const primaryText = useThemeColor("Text", "Primary");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -21,21 +21,23 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to process request');
+        throw new Error(data.error || "Failed to process request");
       }
 
       setIsSubmitted(true);
     } catch (error) {
-      console.error('Forgot password error:', error);
-      setError(error instanceof Error ? error.message : 'Failed to process request');
+      console.error("Forgot password error:", error);
+      setError(
+        error instanceof Error ? error.message : "Failed to process request",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -44,10 +46,13 @@ export default function ForgotPasswordPage() {
   return (
     <div className="max-w-md mx-auto mt-8">
       <h1 className="text-2xl font-bold mb-6">Reset Password</h1>
-      
+
       {isSubmitted ? (
         <Alert variant="success" icon={true}>
-          <p>If an account exists with that email, you will receive password reset instructions.</p>
+          <p>
+            If an account exists with that email, you will receive password
+            reset instructions.
+          </p>
           <p className="mt-4">
             <Link href="/login" className={`${primaryText} hover:underline`}>
               Return to login
@@ -61,7 +66,7 @@ export default function ForgotPasswordPage() {
               {error}
             </Alert>
           )}
-          
+
           <Card>
             <form onSubmit={handleSubmit} className="space-y-4">
               <FormInput
@@ -72,7 +77,7 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              
+
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -83,7 +88,7 @@ export default function ForgotPasswordPage() {
               </Button>
             </form>
           </Card>
-          
+
           <div className="mt-4 text-center">
             <Link href="/login" className={`${primaryText} hover:underline`}>
               Back to Login

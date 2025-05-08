@@ -24,12 +24,12 @@ export default function RootLayout({
           <div className="flex flex-col min-h-screen">
             {/* Header with navigation */}
             <Header />
-            
+
             {/* Main content */}
             <main className="flex-grow container mx-auto px-4 py-6">
               {children}
             </main>
-            
+
             {/* Footer */}
             <Footer />
           </div>
