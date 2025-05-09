@@ -104,7 +104,7 @@ export function UserNav() {
             className={`px-3 py-2 text-sm ${onSecondary} border-b ${borderSecondary}`}
           >
             Signed in as{" "}
-            <span className="font-medium text-gray-900">
+            <span className={`font-medium ${onSecondary}`}>
               {session.user?.email}
             </span>
           </div>

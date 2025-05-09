@@ -436,6 +436,40 @@ export const tokenCategories: ColorCategory[] = [
       },
     ],
   },
+  {
+    name: "File",
+    description: "Used for file input styling",
+    colors: [
+      {
+        name: "Background",
+        lightClassName: "file:bg-white",
+        darkClassName: "file:bg-blue-700",
+        variable: "--file-background",
+        description: "Background color for file input elements",
+      },
+      {
+        name: "Text",
+        lightClassName: "file:text-blue-700",
+        darkClassName: "file:text-blue-300",
+        variable: "--file-text",
+        description: "Text color for file input elements",
+      },
+      {
+        name: "Hover Background",
+        lightClassName: "file:hover:bg-blue-100",
+        darkClassName: "file:hover:bg-blue-800",
+        variable: "--file-hover-background",
+        description: "Hover background color for file input elements",
+      },
+      {
+        name: "Hover Text",
+        lightClassName: "file:hover:text-blue-800",
+        darkClassName: "file:hover:text-blue-200",
+        variable: "--file-hover-text",
+        description: "Hover text color for file input elements",
+      },
+    ],
+  },
 ];
 
 /**
@@ -448,7 +482,7 @@ export const colorTokenMap = tokenCategories.reduce(
     });
     return acc;
   },
-  {} as Record<string, ColorToken>,
+  {} as Record<string, ColorToken>
 );
 
 /**
@@ -460,7 +494,7 @@ export const colorTokenMap = tokenCategories.reduce(
  */
 export function findColorToken(
   colorName: string,
-  categoryName?: string,
+  categoryName?: string
 ): ColorToken | undefined {
   // Convert the color name to a lookup key format (lowercase with hyphens)
   const normalizedName = colorName.toLowerCase().replace(/\s+/g, "-");
@@ -468,14 +502,14 @@ export function findColorToken(
   // If a category is specified, search only within that category
   if (categoryName) {
     const categoryObj = tokenCategories.find(
-      (cat) => cat.name.toLowerCase() === categoryName.toLowerCase(),
+      (cat) => cat.name.toLowerCase() === categoryName.toLowerCase()
     );
 
     if (categoryObj) {
       return categoryObj.colors.find(
         (color) =>
           color.name.toLowerCase() === colorName.toLowerCase() ||
-          color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName,
+          color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName
       );
     }
     return undefined;
@@ -486,7 +520,7 @@ export function findColorToken(
     const found = cat.colors.find(
       (color) =>
         color.name.toLowerCase() === colorName.toLowerCase() ||
-        color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName,
+        color.name.toLowerCase().replace(/\s+/g, "-") === normalizedName
     );
     if (found) return found;
   }

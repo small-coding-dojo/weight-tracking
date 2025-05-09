@@ -20,7 +20,18 @@ export default function ImportPage() {
     errors?: string[];
     error?: string;
   } | null>(null);
+
   const primaryBorder = useThemeColor("Border", "Primary");
+  const fileBackground = useThemeColor("Background", "File");
+  const fileText = useThemeColor("Text", "File");
+  const fileHoverBackground = useThemeColor("Hover Background", "File");
+  const fileHoverText = useThemeColor("Hover Text", "File");
+  const hoverBorder = useThemeColor("Border Hover", "Assets");
+  const warningText = useThemeColor("Text", "Warning");
+  const primaryText = useThemeColor("Text", "Primary");
+  const primaryTextHover = useThemeColor("Text Hover", "Primary");
+  const assetFocusRing = useThemeColor("Focus Ring", "Assets");
+  
 
   // Redirect to login page if not authenticated
   if (status === "unauthenticated") {
@@ -113,7 +124,11 @@ export default function ImportPage() {
               id="file"
               accept=".xlsx, .xls"
               onChange={handleFileChange}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700"
+              className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${assetFocusRing} 
+                ${hoverBorder}
+                file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium 
+                ${fileBackground} ${fileText}
+                ${fileHoverBackground} ${fileHoverText} file:transition-colors`}
               required
               disabled={isLoading}
             />
@@ -138,8 +153,8 @@ export default function ImportPage() {
                 </p>
                 {result.errors && result.errors.length > 0 && (
                   <div className="mt-2">
-                    <h4 className="font-medium text-amber-700">Warnings:</h4>
-                    <ul className="list-disc pl-6 mt-1 text-sm text-amber-800">
+                    <h4 className={`font-medium ${warningText}`}>Warnings:</h4>
+                    <ul className={`list-disc pl-6 mt-1 text-sm ${warningText}`}>
                       {result.errors.map((error, i) => (
                         <li key={i}>{error}</li>
                       ))}
@@ -149,14 +164,14 @@ export default function ImportPage() {
                 <div className="mt-4">
                   <Link
                     href="/table"
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                    className={`${primaryText} ${primaryTextHover} hover:underline`}
                   >
                     View data in table
                   </Link>
                   {" | "}
                   <Link
                     href="/chart"
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                    className={`${primaryText} ${primaryTextHover} hover:underline`}
                   >
                     View data in chart
                   </Link>
