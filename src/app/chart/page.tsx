@@ -70,6 +70,7 @@ export default function ChartPage() {
   const focusRing = useThemeColor("Focus Ring", "Assets");
   const infoText = useThemeColor("Text", "Info");
   const destructiveText = useThemeColor("Text", "Destructive");
+  const primaryBorder = useThemeColor("Border", "Primary");
 
   const isDarkMode = ThemeManager.getInstance().isDarkMode;
 
